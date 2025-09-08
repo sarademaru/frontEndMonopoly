@@ -1,0 +1,61 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #f5f5f5;
+}   
+
+#tablero {
+    display: grid;
+    grid-template-rows: repeat(11, 1fr);
+    grid-template-columns: repeat(11, 1fr);
+    gap: 1px;
+  width: 90vmin;       /* cuadrado responsivo */
+  aspect-ratio: 1 / 1; /* mantiene proporción */
+    background: white;
+    border: 3px solid black;
+    position: relative;
+}
+
+.casilla {
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(6px, 1.2vw, 12px); /* tamano de letra */
+    text-align: center;
+    padding: 2px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+
+.centro {
+    grid-row: 2 / 11;
+    grid-column: 2 / 11;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.centro img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+/* Las abreviaciones */
+.casilla .abreviacion {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .casilla .nombre-completo {
+    display: none;
+    }
+    .casilla .abreviacion {
+    display: inline;
+    }
+}
