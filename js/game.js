@@ -1,12 +1,22 @@
+// ============================
 // Clase Juego
-class Juego {
+// ============================
+export default class Juego {
     constructor(jugadores, propiedades, totalCasillas = 40) {
         this.jugadores = jugadores;
         this.propiedades = propiedades;
         this.turnoActual = 0;
         this.totalCasillas = totalCasillas;
         this.terminado = false;
+
+        // Estado de los dados
+        this.dice = { dice1: 0, dice2: 0 };
+        this.doublesCount = 0;
     }
+
+    // ----------------------------
+    // Métodos básicos del juego
+    // ----------------------------
 
     getJugadorActual() {
         return this.jugadores[this.turnoActual];
@@ -25,42 +35,74 @@ class Juego {
     comprarPropiedadActual() {
         const jugador = this.getJugadorActual();
         const propiedad = this.propiedades[jugador.posicion];
+
         if (propiedad && !propiedad.dueno) {
             return jugador.comprarPropiedad(propiedad);
         }
         return false;
     }
-    // Tirada de dados aleatoria
+
+    // ----------------------------
+    // Lanzamiento de dados
+    // ----------------------------
+
+    /**
+     * Tirada aleatoria de dados
+     */
     tirarDadosAleatorio() {
         const dado1 = Math.floor(Math.random() * 6) + 1;
         const dado2 = Math.floor(Math.random() * 6) + 1;
-        return {
-            dado1,
-            dado2,
-            suma: dado1 + dado2
-        };
+
+        return { dado1, dado2, suma: dado1 + dado2 };
     }
 
-    // Tirada de dados manual (para pruebas o modo debug)
+    /**
+     * Tirada manual de dados (para debug o pruebas)
+     */
     tirarDadosManual(dado1, dado2) {
-        // Validar que los dados estén en el rango 1-6
         if (
             Number.isInteger(dado1) && Number.isInteger(dado2) &&
             dado1 >= 1 && dado1 <= 6 &&
             dado2 >= 1 && dado2 <= 6
         ) {
-            return {
-                dado1,
-                dado2,
-                suma: dado1 + dado2
-            };
+            return { dado1, dado2, suma: dado1 + dado2 };
         } else {
-            throw new Error('Los valores de los dados deben estar entre 1 y 6.');
+            throw new Error("Los valores de los dados deben estar entre 1 y 6.");
         }
+    }
+
+    /**
+     * Lanza los dados con control de dobles
+     */
+    rollDice() {
+        this.dice.dice1 = Math.floor(Math.random() * 6) + 1;
+        this.dice.dice2 = Math.floor(Math.random() * 6) + 1;
+
+        const isDouble = this.dice.dice1 === this.dice.dice2;
+        if (isDouble) {
+            this.doublesCount++;
+        } else {
+            this.doublesCount = 0;
+        }
+
+        return {
+            dice1: this.dice.dice1,
+            dice2: this.dice.dice2,
+            total: this.dice.dice1 + this.dice.dice2,
+            isDouble,
+            doublesCount: this.doublesCount
+        };
     }
 }
 
-// Exportar la clase para su uso en otros archivos
-if (typeof module !== 'undefined') {
-    module.exports = Juego;
-}
+// ============================
+// Ejemplo de uso
+// ============================
+
+// const juego = new Juego(jugadores, propiedades);
+// const currentPlayer = juego.getJugadorActual();
+
+// const diceResult = juego.rollDice();
+// juego.addGameEvent(
+//     `${currentPlayer.name} lanzó ${diceResult.dice1} y ${diceResult.dice2} (Total: ${diceResult.total})`
+// );

@@ -169,3 +169,62 @@ body {
     display: inline;
     }
 }
+
+
+
+/* Contenedor principal de los dados */
+#dice-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 20px;
+    perspective: 600px;
+}
+
+/* Contenedor vertical: dados + botón */
+.dice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Contenedor horizontal de los dados */
+.dice {
+    display: flex;
+    gap: 10px;
+}
+
+/* Estilo de cada dado */
+.die {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 3px solid #34495e;
+    border-radius: 8px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+/* Animación al lanzar */
+.die.rolling {
+    animation: roll 0.6s ease-in-out;
+}
+
+/* Keyframes del giro */
+@keyframes roll {
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(90deg); }
+    50%      { transform: rotate(180deg); }
+    75%      { transform: rotate(270deg); }
+}

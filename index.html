@@ -8,9 +8,21 @@
 </head>
 <body>
 
+<div class="dice-container"> 
+    <div class="dice">
+         <div id="dice1" class="die">1</div> 
+         <div id="dice2" class="die">1</div> </div> 
+         <button id="btnLanzar" class="btn btn-primary">Lanzar Dados</button>
+          <!-- Opcional: inputs para modo manual -->
+    <div class="manual-inputs">
+      <input id="inputDado1" type="number" min="1" max="6" placeholder="Dado1 (1-6)">
+      <input id="inputDado2" type="number" min="1" max="6" placeholder="Dado2 (1-6)">
+      <button id="btnManual" class="btn">Lanzar Manual</button>
+    </div>
 
+    <p id="resultado"></p>
+    </div>
 
-    
     <div id="tablero">
         <div class="centro">
             <img src="assets/monopoly-logo.png" alt="Monopoly" class="logo-monopoly">
@@ -26,6 +38,7 @@
        <p id="textoCarta"></p>
     </div>
 
-    <script src="js/script.js"></script>
+    <script  type="module" src="js/script.js"></script>
+
 </body>
 </html>
