@@ -1,4 +1,4 @@
-import Game from "js/game.js";
+import Game from "./game.js";
 
 // js/UI.js
 export default class UI {
@@ -9,25 +9,31 @@ export default class UI {
   }
 
   async handleRollDice() {
-    const rollDiceBtn = document.getElementById("btnLanzar");
-    if (rollDiceBtn) rollDiceBtn.disabled = true;
+    const rollDiceBtn = document.getElementById('btnLanzar');
+    rollDiceBtn.disabled = true;
 
-    // animación
+    // animación de dados
     this.animateDice();
-    await this.sleep(600); // esperar que la animación se vea
+    await this.sleep(600);
 
-    // usar el método simple de tirada
-    const result = this.game.tirarDadosAleatorio(); // { dado1, dado2, suma }
-    this.updateDiceDisplay(result);
-    this.showResultText(`Sacaste 🎲 ${result.dado1} y ${result.dado2} (Total: ${result.suma})`);
+    const { dado1, dado2, suma } = this.game.tirarDadosAleatorio();
 
-    // mover jugador en el juego (tu método)
-    if (typeof this.game.moverJugadorActual === 'function') {
-      this.game.moverJugadorActual(result.suma);
-    }
+    this.updateDiceDisplay({ dice1: dado1, dice2: dado2 });
+    document.getElementById("resultado").innerText =
+        `${this.game.getJugadorActual().nombre} sacó ${dado1} y ${dado2} (Total: ${suma})`;
 
-    if (rollDiceBtn) rollDiceBtn.disabled = false;
-  }
+    // mover jugador
+    this.game.moverJugadorActual(suma);
+
+    // actualizar ficha visual
+    colocarFicha(this.game.getJugadorActual(), document.getElementById("tablero"));
+
+    // pasar turno
+    this.game.siguienteTurno();
+
+    rollDiceBtn.disabled = false;
+}
+
 
   handleManualRoll() {
     const d1 = parseInt(document.getElementById("inputDado1").value, 10);

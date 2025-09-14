@@ -1,4 +1,4 @@
-class Jugador {
+ export default class Jugador {
     constructor(nombre, dineroInicial = 1500) {
         this.nombre = nombre;
         this.dinero = dineroInicial;
@@ -6,9 +6,10 @@ class Jugador {
         this.propiedades = [];
         this.enCarcel = false;
         this.turnosEnCarcel = 0;
+        
     }
 
-    mover(casillas, totalCasillas) {
+    mover(casillas, totalCasillas = 40) {
         this.posicion = (this.posicion + casillas) % totalCasillas;
     }
 

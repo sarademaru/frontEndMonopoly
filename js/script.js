@@ -1,7 +1,7 @@
 // script.js
-import UI from "js/UI.js";
-import Juego from "js/game.js";
-import Jugador from "js/player.js";
+import UI from "./UI.js";
+import Juego from "./game.js";
+import Jugador from "./player.js";
 
 let boardData;
 
@@ -172,6 +172,40 @@ function mostrarCarta(tipo) {
     cartaCentro.style.display = "none";
   });
 }
+
+
+
+
+
+function crearFichaHTML(jugador) {
+    const ficha = document.createElement("div");
+    ficha.classList.add("ficha");
+    ficha.style.backgroundColor = jugador.color;
+    ficha.style.width = "20px";
+    ficha.style.height = "20px";
+    ficha.style.borderRadius = "50%";
+    ficha.style.position = "absolute";
+    ficha.style.top = "5px";
+    ficha.style.left = "5px";
+    
+    jugador.ficha = ficha; // guardamos referencia
+    return ficha;
+}
+
+
+function colocarFicha(jugador, tablero, casillas) {
+    // quitar ficha de casilla anterior si existía
+    const ficha = jugador.ficha;
+    if (!ficha) return;
+
+    // buscar la casilla según la posición
+    const casilla = tablero.children[jugador.posicion];
+    if (!casilla) return;
+
+    // posicionar la ficha dentro de la casilla
+    casilla.appendChild(ficha);
+}
+
 
 // inicializar
 cargarCasillas();
