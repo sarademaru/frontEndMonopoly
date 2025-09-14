@@ -1,6 +1,6 @@
 async function cargarCasillas() {
 try {
-    const resp = await fetch("board.json");
+    const resp = await fetch("json/board.json");
     const data = await resp.json();
 
     const casillas = [...data.bottom, ...data.left, ...data.top, ...data.right];
