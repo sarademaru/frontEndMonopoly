@@ -1,7 +1,9 @@
+let boardData;
 async function cargarCasillas() {
 try {
     const resp = await fetch("json/board.json");
     const data = await resp.json();
+    boardData = data; // Guardar todo el json
 
     const casillas = [...data.bottom, ...data.left, ...data.top, ...data.right];
     const tablero = document.getElementById("tablero");
@@ -10,13 +12,27 @@ try {
     const div = document.createElement("div");
     div.classList.add("casilla");
 
-      // Abreviación (3 primeras letras en mayúsculas)
+     if (c.type) {
+        div.classList.add(c.type);
+    }
+
+     // Abreviación
     const abrev = (c.name || "").slice(0, 3).toUpperCase();
 
-    div.innerHTML = `
+    // Construcción del contenido con innerHTML
+    let contenido = "";
+
+    // Si es propiedad, añadimos franja de color
+    if (c.type === "property" && c.color) {
+        contenido += `<div class="color-bar" style="background-color:${c.color};"></div>`;
+    }
+
+    contenido += `
         <span class="nombre-completo">${c.name}</span>
         <span class="abreviacion">${abrev}</span>
     `;
+
+    div.innerHTML = contenido;
 
       // Posicionamiento
     if (i < 11) {
@@ -56,24 +72,14 @@ function mostrarDetalles(c) {
     if (!modal) {
     modal = document.createElement("div");
     modal.id = "detalleModal";
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.background = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.alignItems = "center";
-    modal.style.justifyContent = "center";
-    modal.style.zIndex = "1000";
 
     modal.innerHTML = `
-        <div style="background:white; padding:20px; border-radius:10px; max-width:320px; text-align:center;">
-        <h3 id="modalNombre"></h3>
-        <div id="modalContenido"></div>
-        <button id="cerrarModal" style="margin-top:15px; padding:8px 15px; border:none; border-radius:5px; background:#333; color:white; cursor:pointer;">Cerrar</button>
-        </div>
-    `;
+  <div class="modal-content">
+    <h3 id="modalNombre"></h3>
+    <div id="modalContenido"></div>
+    <button id="cerrarModal">Cerrar</button>
+  </div>
+`;
     document.body.appendChild(modal);
 
     // Para cerrar el modal
@@ -83,6 +89,32 @@ function mostrarDetalles(c) {
     }
     });
 }
+
+function mostrarCarta(tipo) {
+  const cartaCentro = document.getElementById("cartaCentro");
+  const imgCarta = document.getElementById("imgCarta");
+  const textoCarta = document.getElementById("textoCarta");
+
+  let carta;
+
+  if (tipo === "chance") {
+    carta = boardData.chance[Math.floor(Math.random() * boardData.chance.length)];
+    imgCarta.src = "assets/sorpresa.png";
+  } else if (tipo === "community_chest") {
+    carta = boardData.community_chest[Math.floor(Math.random() * boardData.community_chest.length)];
+    imgCarta.src = "assets/comunidad.png";
+  }
+
+  textoCarta.textContent = carta.description;
+
+  cartaCentro.style.display = "flex";
+
+  // ocultar con clic
+  cartaCentro.addEventListener("click", () => {
+    cartaCentro.style.display = "none";
+  });
+}
+
 
   // Contenido dinámico según el tipo
     let contenido = "";
@@ -115,11 +147,11 @@ function mostrarDetalles(c) {
         `;
         break;
     case "community_chest":
-        contenido = `<p>Casilla de Caja de Comunidad. Roba una carta.</p>`;
-        break;
+        mostrarCarta("community_chest");
+        return;
     case "chance":
-        contenido = `<p>Casilla de Sorpresa. Roba una carta.</p>`;
-        break;
+        mostrarCarta("chance");
+        return; 
     case "special":
         contenido = `<p>Casilla especial.</p>`;
         break;
