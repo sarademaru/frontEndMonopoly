@@ -20,7 +20,7 @@ function generatePlayerInputs(count) {
 
     playerDiv.innerHTML = `
       <h3>Jugador ${i} ${tokenColors[i - 1]}</h3>
-      <label for="player${i}-name">Nick_name:</label>
+      <label for="player${i}-name">Nombre:</label>
       <input type="text" id="player${i}-name" value="Jugador ${i}" required>
       
       <label for="player${i}-country">País:</label>
