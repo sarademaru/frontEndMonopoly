@@ -248,6 +248,45 @@ body {
     background-color: #2980b9;
 }
 
+
+
+
+
+
+
+/* Estilo del pre-menu */
+#pre-menu-modal {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  background: #fff;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  text-align: center;
+}
+
+/* Estilo del setUp*/
+#setup-modal {
+  display: inline-block;
+  text-align: left;
+}
+
+/* Estilo del botonIniciar Juego*/
+#btn.btn-primary {
+  margin-top: 16px;
+}
+
+
+
+
+
+
+
+
+
+
 /* Estilo de cada dado */
 .ficha {
     display: flex;

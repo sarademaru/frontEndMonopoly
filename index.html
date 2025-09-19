@@ -8,38 +8,59 @@
 </head>
 <body>
 
+<!-- Pre-menú: Bienvenida + Configuración -->
+<div id="pre-menu-modal">
+  <h2>Bienvenido a Monopoly</h2>
+  <p>¿Listo para jugar?</p>
+  <hr>
+  <h2>Configuración del Juego</h2>
+  <div class="setup-form">
+    <!-- Selección de jugadores -->
+    <div class="player-count">
+      <label for="player-count">Número de Jugadores:</label>
+      <select id="player-count">
+        <option value="2">2 Jugadores</option>
+        <option value="3">3 Jugadores</option>
+        <option value="4" selected>4 Jugadores</option>
+      </select>
+    </div>
+    <!-- Inputs de nickname y país -->
+    <div id="players-setup"></div>
+    <button id="start-game" class="btn btn-primary" >Iniciar Juego</button>
+  </div>
+</div>
+
+<!-- Tablero y controles del juego -->
 <div class="dice-container"> 
     <div class="dice">
          <div id="dice1" class="die">1</div> 
-         <div id="dice2" class="die">1</div> </div> 
-         <button id="btnLanzar" class="btn btn-primary">Lanzar Dados</button>
-          <!-- Opcional: inputs para modo manual -->
+         <div id="dice2" class="die">1</div>
+    </div> 
+    <button id="btnLanzar" class="btn btn-primary">Lanzar Dados</button>
     <div class="manual-inputs">
       <input id="inputDado1" type="number" min="1" max="6" placeholder="Dado1 (1-6)">
       <input id="inputDado2" type="number" min="1" max="6" placeholder="Dado2 (1-6)">
       <button id="btnManual" class="btn">Lanzar Manual</button>
     </div>
-
     <p id="resultado"></p>
-    </div>
+</div>
 
-    <div id="tablero">
-        <div class="centro">
-            <img src="assets/monopoly-logo.png" alt="Monopoly" class="logo-monopoly">
-            
-            <div class="cartas">
-             <img src="assets/sorpresa.png" alt="Carta Sorpresa">
-             <img src="assets/comunidad.png" alt="Carta Comunidad">
-            </div>
+<div id="tablero">
+    <div class="centro">
+        <img src="assets/monopoly-logo.png" alt="Monopoly" class="logo-monopoly">
+        <div class="cartas">
+         <img src="assets/sorpresa.png" alt="Carta Sorpresa">
+         <img src="assets/comunidad.png" alt="Carta Comunidad">
         </div>
     </div>
+</div>
 
-    <div id="cajonJugadores"></div>
-    <div id="cartaCentro" class="carta-oculta">
-       <img id="imgCarta" src="" alt="Carta Monopoly">
-       <p id="textoCarta"></p>
-    </div>
+<div id="cajonJugadores"></div>
+<div id="cartaCentro" class="carta-oculta">
+   <img id="imgCarta" src="" alt="Carta Monopoly">
+   <p id="textoCarta"></p>
+</div>
 
-   <script type="module" src="./js/script.js"></script>
+<script type="module" src="./js/setup.js"></script>
 </body>
 </html>

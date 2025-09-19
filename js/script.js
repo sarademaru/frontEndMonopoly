@@ -4,14 +4,82 @@ import Juego from "./game.js";
 import Jugador from "./player.js";
 
 let boardData;
+let game; 
+let ui; 
+
+// ...existing code...
+
+window.onload = () => {
+  document.getElementById("pre-menu-modal").style.display = "block";
+};
+
+document.getElementById("start-game").addEventListener("click", () => {
+  // ...tu lógica de creación de jugadores...
+  document.getElementById("pre-menu-modal").style.display = "none";
+});
+
+export function iniciarJuego(jugadores) {
+  const propiedades = new Array(40).fill(null);
+  game = new Juego(jugadores, propiedades);
+  ui = new UI(game);
+  cargarCasillas();
+  inicializarListenersDados();
+}
+
+ // ...para que los dados sirvan despues de dar "iniciar juego"...
+function inicializarListenersDados() {
+  document.getElementById("btnLanzar").onclick = () => {
+    const dice1 = document.getElementById("dice1");
+    const dice2 = document.getElementById("dice2");
+
+    // Agrega la clase de animación
+    dice1.classList.add("rolling");
+    dice2.classList.add("rolling");
+
+    // Espera la animación antes de mostrar el resultado
+    setTimeout(() => {
+      const resultado = game.tirarDadosAleatorio();
+      dice1.textContent = resultado.dado1;
+      dice2.textContent = resultado.dado2;
+      document.getElementById("resultado").textContent = `Total: ${resultado.suma}`;
+
+      // Quita la clase de animación
+      dice1.classList.remove("rolling");
+      dice2.classList.remove("rolling");
+    }, 500); // Debe coincidir con la duración de la animación
+  };
+
+  document.getElementById("btnManual").onclick = () => {
+    const dice1 = document.getElementById("dice1");
+    const dice2 = document.getElementById("dice2");
+    const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
+    const dado2 = parseInt(document.getElementById("inputDado2").value, 10);
+
+    dice1.classList.add("rolling");
+    dice2.classList.add("rolling");
+
+    setTimeout(() => {
+      try {
+        const resultado = game.tirarDadosManual(dado1, dado2);
+        dice1.textContent = resultado.dado1;
+        dice2.textContent = resultado.dado2;
+        document.getElementById("resultado").textContent = `Total: ${resultado.suma}`;
+      } catch (e) {
+        document.getElementById("resultado").textContent = e.message;
+      }
+      dice1.classList.remove("rolling");
+      dice2.classList.remove("rolling");
+    }, 500);
+  };
+}
 
 // Crear jugadores y propiedades mínimas
 const jugadores = [new Jugador("Jugador 1"), new Jugador("Jugador 2")];
 const propiedades = new Array(40).fill(null);
 
-// Crear juego y UI
-const game = new Juego(jugadores, propiedades);
-const ui = new UI(game);
+// Eliminar la redeclaración de 'game' y 'ui' aquí
+// const game = new Juego(jugadores, propiedades);
+// const ui = new UI(game);
 
 // --- CARGA DE CASILLAS ---
 async function cargarCasillas() {
