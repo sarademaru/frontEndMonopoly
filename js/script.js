@@ -18,13 +18,33 @@ document.getElementById("start-game").addEventListener("click", () => {
   document.getElementById("pre-menu-modal").style.display = "none";
 });
 
-export function iniciarJuego(jugadores) {
+export async function iniciarJuego(jugadores) {
   const propiedades = new Array(40).fill(null);
   game = new Juego(jugadores, propiedades);
   ui = new UI(game);
-  cargarCasillas();
+
+  await cargarCasillas();
+  dibujarFichas(jugadores);
   inicializarListenersDados();
+  
 }
+
+function dibujarFichas(jugadores) {
+  const fichasSalida = document.getElementById("fichas-salida");
+  fichasSalida.innerHTML = ""; 
+  jugadores.forEach((jugador) => {
+    const ficha = document.createElement("span");
+    ficha.className = "ficha";
+    ficha.textContent = jugador.token;
+    ficha.title = jugador.name;
+    ficha.style.fontSize = "2rem";
+    ficha.style.marginRight = "5px";
+    fichasSalida.appendChild(ficha);
+  });
+}
+
+
+
 
  // ...para que los dados sirvan despues de dar "iniciar juego"...
 function inicializarListenersDados() {
@@ -77,9 +97,6 @@ function inicializarListenersDados() {
 const jugadores = [new Jugador("Jugador 1"), new Jugador("Jugador 2")];
 const propiedades = new Array(40).fill(null);
 
-// Eliminar la redeclaración de 'game' y 'ui' aquí
-// const game = new Juego(jugadores, propiedades);
-// const ui = new UI(game);
 
 // --- CARGA DE CASILLAS ---
 async function cargarCasillas() {
@@ -113,6 +130,11 @@ async function cargarCasillas() {
         <span class="nombre-completo">${c.name}</span>
         <span class="abreviacion">${abrev}</span>
       `;
+
+      // Si es la casilla de salida (id 0), agrega el contenedor de fichas
+      if (c.id === 0) {
+        contenido += `<div id="fichas-salida"></div>`;
+      }
 
       div.innerHTML = contenido;
 
@@ -245,34 +267,6 @@ function mostrarCarta(tipo) {
 
 
 
-function crearFichaHTML(jugador) {
-    const ficha = document.createElement("div");
-    ficha.classList.add("ficha");
-    ficha.style.backgroundColor = jugador.color;
-    ficha.style.width = "20px";
-    ficha.style.height = "20px";
-    ficha.style.borderRadius = "50%";
-    ficha.style.position = "absolute";
-    ficha.style.top = "5px";
-    ficha.style.left = "5px";
-    
-    jugador.ficha = ficha; // guardamos referencia
-    return ficha;
-}
-
-
-function colocarFicha(jugador, tablero, casillas) {
-    // quitar ficha de casilla anterior si existía
-    const ficha = jugador.ficha;
-    if (!ficha) return;
-
-    // buscar la casilla según la posición
-    const casilla = tablero.children[jugador.posicion];
-    if (!casilla) return;
-
-    // posicionar la ficha dentro de la casilla
-    casilla.appendChild(ficha);
-}
 
 
 // inicializar

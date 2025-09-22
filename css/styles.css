@@ -104,6 +104,8 @@ body {
     margin-bottom: var(--spacing-xxl);
 }
 
+
+
 .cartas {
   display: flex;
   gap: var(--spacing-huge);
@@ -113,7 +115,23 @@ body {
     max-width: 200px;
     height: 120px;
     margin: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-normal);
+    cursor: pointer;
+    border: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
+
+.cartas img:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: var(--shadow-heavy);
+}
+
+
+
+
+
+
 
 /* ========== ABREVIACIONES ========== */
 .casilla .abreviacion {
@@ -293,6 +311,47 @@ body {
     }
 }
 
+
+
+
+/* ========== REVISAR ESTA OPCIONNNNNN ========== */
+@media (max-width: 430px) {
+    body {
+        padding: var(--spacing-sm) 0;
+    }
+    
+    #tablero {
+        width: 95vmin;
+        margin-top: var(--spacing-sm);
+    }
+    
+    #dice-container {
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-sm);
+    }
+    
+    .cartas {
+        gap: var(--spacing-lg);
+    }
+    
+    .cartas img {
+        max-width: 140px;
+        height: 90px;
+        margin: var(--spacing-sm);
+    }
+    
+    .logo-monopoly {
+        max-width: 300px;
+    }
+}
+
+
+
+
+
+
+
+
 @media (max-width: 320px) {
     .die {
         width: 35px;
@@ -383,3 +442,7 @@ body {
         transition: none;
     }
 }
+
+
+
+

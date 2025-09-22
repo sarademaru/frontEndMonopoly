@@ -1,0 +1,496 @@
+/* ============================================
+   BOARD COMPONENT - TABLERO DE MONOPOLY
+   ============================================ */
+
+/* ========== TABLERO PRINCIPAL ========== */
+#tablero {
+    margin-top: var(--spacing-lg);
+    display: grid;
+    grid-template-rows: repeat(11, 1fr);
+    grid-template-columns: repeat(11, 1fr);
+    width: var(--board-size);
+    aspect-ratio: 1 / 1;
+    background: var(--board-bg);
+    gap: 0;
+    border: var(--border-width-heavy) solid var(--board-border);
+    position: relative;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-medium);
+}
+
+/* ========== CASILLAS DEL TABLERO ========== */
+.casilla {
+    border: none;
+    margin: var(--border-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: var(--cell-font-size);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    padding: var(--spacing-xs);
+    box-sizing: border-box;
+    background: var(--cell-bg);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-light);
+    position: relative;
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.casilla:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+    z-index: 10;
+}
+
+/* ========== BARRA DE COLOR DE CASILLAS ========== */
+.color-bar {
+    width: 100%;
+    height: 20%;
+    border-bottom: var(--border-width) solid var(--board-border);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    position: relative;
+}
+
+/* ========== TIPOS DE CASILLAS ========== */
+.casilla.property {
+    background: var(--cell-bg);
+}
+
+.casilla.tax {
+    background: var(--tax-color);
+}
+
+.casilla.chance {
+    background: var(--chance-color);
+}
+
+.casilla.community_chest {
+    background: var(--community-color);
+}
+
+.casilla.railroad {
+    background: var(--railroad-color);
+}
+
+.casilla.utility {
+    background: var(--special-color);
+}
+
+.casilla.special {
+    background: var(--special-color);
+}
+
+.casilla.corner {
+    background: var(--cell-bg);
+    border: var(--border-width-thick) solid var(--board-border);
+    font-weight: var(--font-weight-heavy);
+}
+
+/* ========== COLORES DE PROPIEDADES ========== */
+.casilla[data-group="brown"] .color-bar {
+    background: #8B4513;
+}
+
+.casilla[data-group="light-blue"] .color-bar {
+    background: #87CEEB;
+}
+
+.casilla[data-group="pink"] .color-bar {
+    background: #FF69B4;
+}
+
+.casilla[data-group="orange"] .color-bar {
+    background: #FFA500;
+}
+
+.casilla[data-group="red"] .color-bar {
+    background: #DC143C;
+}
+
+.casilla[data-group="yellow"] .color-bar {
+    background: #FFD700;
+}
+
+.casilla[data-group="green"] .color-bar {
+    background: #228B22;
+}
+
+.casilla[data-group="dark-blue"] .color-bar {
+    background: #000080;
+}
+
+/* ========== CENTRO DEL TABLERO ========== */
+.centro {
+    grid-row: 2 / 11;
+    grid-column: 2 / 11;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    background: var(--center-bg);
+    border-radius: var(--border-radius-sm);
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.logo-monopoly {
+    max-width: 300%;
+    height: auto;
+    margin-bottom: var(--spacing-xxl);
+    transition: var(--transition-normal);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.logo-monopoly:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* ========== CARTAS DEL CENTRO ========== */
+.cartas {
+    display: flex;
+    gap: var(--spacing-huge);
+    align-items: center;
+    justify-content: center;
+}
+
+.cartas img {
+    max-width: 200px;
+    height: 120px;
+    margin: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-normal);
+    cursor: pointer;
+    border: var(--border-width) solid rgba(0, 0, 0, 0.1);
+}
+
+.cartas img:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* ========== NOMBRES DE CASILLAS ========== */
+.casilla .nombre-completo {
+    display: block;
+    line-height: 1.2;
+    font-size: var(--cell-font-size);
+    color: var(--text-primary);
+}
+
+.casilla .abreviacion {
+    display: none;
+    font-size: calc(var(--cell-font-size) * 0.8);
+    font-weight: var(--font-weight-heavy);
+    color: var(--text-primary);
+}
+
+/* ========== PRECIOS Y INFORMACIÓN ========== */
+.casilla .precio {
+    font-size: calc(var(--cell-font-size) * 0.7);
+    color: var(--text-secondary);
+    margin-top: auto;
+    font-weight: var(--font-weight-medium);
+}
+
+/* ========== PROPIETARIOS Y CASAS ========== */
+.casilla .propietario {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--board-border);
+}
+
+.casilla .casas {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    display: flex;
+    gap: 1px;
+}
+
+.casilla .casa {
+    width: 4px;
+    height: 4px;
+    background: #228B22;
+    border-radius: 1px;
+}
+
+.casilla .hotel {
+    width: 6px;
+    height: 6px;
+    background: #DC143C;
+    border-radius: 1px;
+}
+
+/* ========== JUGADORES EN CASILLAS ========== */
+.casilla .jugadores {
+    position: absolute;
+    bottom: var(--spacing-xs);
+    right: var(--spacing-xs);
+    display: flex;
+    gap: 1px;
+    flex-wrap: wrap;
+    max-width: 20px;
+}
+
+.casilla .jugador-token {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--text-white);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Colores de jugadores */
+.jugador-token.jugador-1 { background: #FF4444; }
+.jugador-token.jugador-2 { background: #4444FF; }
+.jugador-token.jugador-3 { background: #44FF44; }
+.jugador-token.jugador-4 { background: #FFFF44; }
+
+/* ========== EFECTOS ESPECIALES ========== */
+.casilla.destacada {
+    animation: pulso 2s infinite;
+    border: var(--border-width-thick) solid var(--monopoly-gold);
+}
+
+@keyframes pulso {
+    0%, 100% {
+        box-shadow: var(--shadow-light), 0 0 0 0 rgba(255, 215, 0, 0.7);
+    }
+    50% {
+        box-shadow: var(--shadow-light), 0 0 0 4px rgba(255, 215, 0, 0);
+    }
+}
+
+.casilla.seleccionada {
+    transform: scale(1.1);
+    z-index: 20;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* ========== RESPONSIVE PARA TABLERO ========== */
+
+/* MÓVIL GRANDE Y TABLET VERTICAL (hasta 767px) */
+@media (max-width: 767px) {
+    #tablero {
+        width: 95vmin;
+        margin-top: var(--spacing-sm);
+    }
+    
+    .casilla .nombre-completo {
+        display: none;
+    }
+    
+    .casilla .abreviacion {
+        display: block;
+    }
+    
+    .cartas {
+        gap: var(--spacing-lg);
+        flex-wrap: wrap;
+    }
+    
+    .cartas img {
+        max-width: 150px;
+        height: 90px;
+        margin: var(--spacing-sm);
+    }
+    
+    .logo-monopoly {
+        margin-bottom: var(--spacing-lg);
+        max-width: 250%;
+    }
+}
+
+/* MÓVIL ESTÁNDAR (hasta 480px) */
+@media (max-width: 480px) {
+    #tablero {
+        width: 98vmin;
+        border-width: var(--border-width-thick);
+    }
+    
+    .casilla {
+        margin: 0.5px;
+        padding: 1px;
+    }
+    
+    .casilla:hover {
+        transform: scale(1.02); /* Menos zoom en móvil */
+    }
+    
+    .centro {
+        padding: var(--spacing-sm);
+    }
+    
+    .cartas {
+        gap: var(--spacing-sm);
+    }
+    
+    .cartas img {
+        max-width: 120px;
+        height: 70px;
+        margin: var(--spacing-xs);
+    }
+    
+    .logo-monopoly {
+        margin-bottom: var(--spacing-sm);
+        max-width: 200%;
+    }
+    
+    .casilla .precio {
+        font-size: calc(var(--cell-font-size) * 0.6);
+    }
+}
+
+/* MÓVIL PEQUEÑO (hasta 320px) */
+@media (max-width: 320px) {
+    #tablero {
+        width: 100vmin;
+        border-width: 2px;
+    }
+    
+    .casilla {
+        padding: 0.5px;
+    }
+    
+    .cartas {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+    
+    .cartas img {
+        max-width: 100px;
+        height: 60px;
+        margin: 2px;
+    }
+    
+    .logo-monopoly {
+        max-width: 150%;
+    }
+    
+    .centro {
+        padding: var(--spacing-xs);
+    }
+}
+
+/* ========== ORIENTACIÓN LANDSCAPE ========== */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #tablero {
+        width: 80vmin;
+        margin-top: var(--spacing-xs);
+    }
+    
+    .centro {
+        padding: var(--spacing-xs);
+    }
+    
+    .logo-monopoly {
+        margin-bottom: var(--spacing-xs);
+        max-width: 200%;
+    }
+    
+    .cartas {
+        gap: var(--spacing-sm);
+    }
+    
+    .cartas img {
+        max-width: 80px;
+        height: 50px;
+        margin: var(--spacing-xs);
+    }
+}
+
+/* ========== TABLETAS EN LANDSCAPE ========== */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    #tablero {
+        width: 85vmin;
+    }
+    
+    .cartas img {
+        max-width: 180px;
+        height: 110px;
+    }
+}
+
+/* ========== ESCRITORIO GRANDE ========== */
+@media screen and (min-width: 1200px) {
+    #tablero {
+        max-width: 900px;
+    }
+    
+    .cartas img {
+        max-width: 250px;
+        height: 150px;
+    }
+    
+    .logo-monopoly {
+        max-width: 350%;
+    }
+}
+
+/* ========== MEJORAS PARA TOUCH DEVICES ========== */
+@media (hover: none) and (pointer: coarse) {
+    .casilla:hover {
+        transform: none; /* Eliminar hover en touch */
+    }
+    
+    .casilla:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+    
+    .cartas img:hover {
+        transform: none;
+    }
+    
+    .cartas img:active {
+        transform: scale(0.95);
+    }
+    
+    .logo-monopoly:hover {
+        transform: none;
+    }
+}
+
+/* ========== REDUCIR MOVIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    .casilla,
+    .cartas img,
+    .logo-monopoly {
+        transition: none;
+    }
+    
+    .casilla:hover,
+    .cartas img:hover,
+    .logo-monopoly:hover {
+        transform: none;
+    }
+    
+    .casilla.destacada {
+        animation: none;
+        border: var(--border-width-thick) solid var(--monopoly-gold);
+    }
+}
+
+/* ========== MODO ALTO CONTRASTE ========== */
+@media (prefers-contrast: high) {
+    .casilla {
+        border: var(--border-width) solid var(--text-primary);
+    }
+    
+    .color-bar {
+        border-bottom: var(--border-width-thick) solid var(--text-primary);
+    }
+    
+    #tablero {
+        border-color: var(--text-primary);
+    }
+}

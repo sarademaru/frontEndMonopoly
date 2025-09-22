@@ -1,0 +1,571 @@
+/* ============================================
+   DICE COMPONENT - DADOS Y CONTROLES
+   ============================================ */
+
+/* ========== CONTENEDOR PRINCIPAL DE DADOS ========== */
+#dice-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--spacing-xxl);
+    margin-top: var(--spacing-lg);
+    perspective: 600px;
+}
+
+/* ========== CONTENEDOR VERTICAL (DADOS + BOTÓN) ========== */
+.dice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ========== CONTENEDOR HORIZONTAL DE DADOS ========== */
+.dice {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* ========== ESTILO DE CADA DADO ========== */
+.die {
+    width: var(--dice-size);
+    height: var(--dice-size);
+    background: var(--dice-bg);
+    border: var(--border-width-heavy) solid var(--dice-border);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--dice-font-size);
+    font-weight: var(--font-weight-heavy);
+    color: var(--dice-text);
+    box-shadow: var(--shadow-medium);
+    transition: transform var(--transition-normal);
+}
+
+/* ========== BOTONES DE DADOS ========== */
+.dice-container button {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-md);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius-xs);
+    background-color: var(--dice-button-bg);
+    color: var(--text-white);
+    transition: background-color var(--transition-normal);
+}
+
+.dice-container button:hover {
+    background-color: var(--dice-button-hover);
+}
+
+/* ========== ANIMACIÓN DE LANZAMIENTO ========== */
+.die.rolling {
+    animation: roll 0.6s ease-in-out;
+}
+
+@keyframes roll {
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(90deg); }
+    50%      { transform: rotate(180deg); }
+    75%      { transform: rotate(270deg); }
+}
+.manual-inputs {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    border: var(--border-width) solid rgba(255, 255, 255, 0.2);
+}
+
+.manual-inputs input {
+    width: 80px;
+    padding: var(--spacing-sm);
+    border: var(--border-width-thick) solid var(--text-secondary);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    background: var(--modal-content-bg);
+    color: var(--text-primary);
+    transition: var(--transition-normal);
+}
+
+.manual-inputs input:focus {
+    outline: none;
+    border-color: var(--monopoly-gold);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.manual-inputs input:invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
+}
+
+.manual-inputs button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-normal);
+    min-height: 36px;
+}
+
+.manual-inputs button:hover {
+    background: linear-gradient(135deg, #495057, #343a40);
+    transform: translateY(-1px);
+}
+
+/* ========== RESULTADO ========== */
+#resultado {
+    margin-top: var(--spacing-md);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: var(--border-radius-lg);
+    border: var(--border-width) solid rgba(255, 215, 0, 0.3);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#resultado.highlight {
+    animation: resultHighlight 1s ease-out;
+}
+
+@keyframes resultHighlight {
+    0% {
+        background: rgba(255, 215, 0, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        background: rgba(255, 215, 0, 0.7);
+        transform: scale(1.05);
+    }
+    100% {
+        background: rgba(255, 215, 0, 0.1);
+        transform: scale(1);
+    }
+}
+
+/* ========== ESTADOS ESPECIALES ========== */
+.dice-container.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.dice-container.rolling .die {
+    pointer-events: none;
+}
+
+/* ========== RESPONSIVE PARA DADOS ========== */
+
+/* TABLET VERTICAL Y MÓVIL GRANDE (hasta 767px) */
+@media (max-width: 767px) {
+    #dice-container {
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+    
+    .dice-container {
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+    
+    .die {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+    
+    .manual-inputs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+    
+    .manual-inputs input {
+        width: 100%;
+        max-width: 120px;
+        margin: 0 auto;
+    }
+}
+
+/* MÓVIL ESTÁNDAR (hasta 480px) */
+@media (max-width: 480px) {
+    #dice-container {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-xs);
+        margin-top: var(--spacing-xs);
+    }
+    
+    .dice-container {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: var(--spacing-sm);
+    }
+    
+    .die {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .dice-container button {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-sm);
+        width: 100%;
+    }
+    
+    #resultado {
+        font-size: var(--font-size-md);
+        margin-top: var(--spacing-sm);
+    }
+}
+
+/* MÓVIL PEQUEÑO (hasta 320px) */
+@media (max-width: 320px) {
+    .die {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+    
+    .dice {
+        gap: var(--spacing-xs);
+    }
+    
+    .dice-container button {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-xs);
+    }
+    
+    .manual-inputs input {
+        width: 60px;
+        padding: var(--spacing-xs);
+    }
+}
+
+/* ========== ORIENTACIÓN LANDSCAPE ========== */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #dice-container {
+        margin-top: var(--spacing-xs);
+        flex-direction: row;
+        gap: var(--spacing-md);
+        padding: var(--spacing-xs);
+    }
+    
+    .dice-container {
+        margin-bottom: var(--spacing-xs);
+        padding: var(--spacing-sm);
+    }
+    
+    .die {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+    
+    .dice-container button {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    #resultado {
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+        padding: var(--spacing-xs);
+    }
+    
+    .manual-inputs {
+        padding: var(--spacing-xs);
+        margin-top: var(--spacing-xs);
+    }
+}
+
+/* ========== TABLET LANDSCAPE ========== */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    #dice-container {
+        margin-top: var(--spacing-md);
+    }
+    
+    .die {
+        width: 55px;
+        height: 55px;
+        font-size: 26px;
+    }
+}
+
+/* ========== ESCRITORIO GRANDE ========== */
+@media screen and (min-width: 1200px) {
+    #dice-container {
+        gap: 60px;
+        padding: var(--spacing-lg);
+    }
+    
+    .dice-container {
+        padding: var(--spacing-xl);
+    }
+    
+    .die {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    .dice-container button {
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-size: var(--font-size-lg);
+    }
+    
+    #resultado {
+        font-size: var(--font-size-xl);
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+    
+    .manual-inputs input {
+        width: 100px;
+        padding: var(--spacing-md);
+        font-size: var(--font-size-md);
+    }
+}
+
+/* ========== MEJORAS PARA TOUCH DEVICES ========== */
+@media (hover: none) and (pointer: coarse) {
+    .die:hover {
+        transform: none;
+        box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .die:active {
+        transform: scale(0.95);
+        transition: transform 0.1s;
+    }
+    
+    .dice-container button {
+        min-height: var(--button-min-height);
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+    
+    .dice-container button:hover {
+        transform: none;
+        box-shadow: var(--shadow-button);
+    }
+    
+    .dice-container button:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+    
+    .manual-inputs input {
+        min-height: 44px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .manual-inputs button {
+        min-height: 44px;
+        padding: var(--spacing-sm) var(--spacing-lg);
+    }
+}
+
+/* ========== REDUCIR MOVIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    .die.rolling {
+        animation: none;
+    }
+    
+    .die.resultado {
+        animation: none;
+    }
+    
+    #resultado.highlight {
+        animation: none;
+        background: rgba(255, 215, 0, 0.3);
+    }
+    
+    .die,
+    .dice-container button,
+    .manual-inputs input,
+    .manual-inputs button {
+        transition: none;
+    }
+    
+    .die:hover,
+    .dice-container button:hover {
+        transform: none;
+    }
+}
+
+/* ========== MODO ALTO CONTRASTE ========== */
+@media (prefers-contrast: high) {
+    .die {
+        border-width: 3px;
+        border-color: var(--text-primary);
+    }
+    
+    .dice-container button {
+        border: var(--border-width-thick) solid var(--text-primary);
+    }
+    
+    .manual-inputs input {
+        border-width: 2px;
+        border-color: var(--text-primary);
+    }
+    
+    #resultado {
+        border-width: 2px;
+        border-color: var(--text-primary);
+        background: rgba(255, 215, 0, 0.3);
+    }
+}
+
+/* ========== DARK MODE ========== */
+@media (prefers-color-scheme: dark) {
+    .dice-container {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    #dice-container {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    
+    .dice {
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .manual-inputs {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .manual-inputs input {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: var(--text-white);
+    }
+    
+    #resultado {
+        background: rgba(255, 215, 0, 0.15);
+        border-color: rgba(255, 215, 0, 0.4);
+        color: var(--text-white);
+    }
+}
+
+/* ========== ANIMACIONES ADICIONALES ========== */
+@keyframes diceShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.die.shake {
+    animation: diceShake 0.5s ease-in-out;
+}
+
+@keyframes buttonPulse {
+    0% { box-shadow: var(--shadow-button); }
+    50% { box-shadow: var(--shadow-button-hover); }
+    100% { box-shadow: var(--shadow-button); }
+}
+
+.dice-container button.pulse {
+    animation: buttonPulse 1s infinite;
+}
+
+/* ========== ESTADOS DE CARGA ========== */
+.dice-container.loading {
+    position: relative;
+}
+
+.dice-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--monopoly-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========== TOOLTIPS PARA DADOS ========== */
+.die[title]:hover::before {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--text-primary);
+    color: var(--text-white);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: var(--spacing-xs);
+}
+
+.die[title]:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+/* ========== EFECTOS SONOROS VISUALES ========== */
+.die.sound-effect {
+    position: relative;
+}
+
+.die.sound-effect::after {
+    content: '♪';
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-size: 16px;
+    color: var(--monopoly-gold);
+    animation: soundWave 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes soundWave {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5) translateY(-10px);
+    }
+}

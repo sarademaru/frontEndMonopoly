@@ -66,7 +66,7 @@ window.onload = () => {
 
 
   
-document.getElementById("start-game").addEventListener("click", () => {
+document.getElementById("start-game").addEventListener("click", async () => {
   const playerCount = parseInt(playerCountSelect.value);
   const jugadores = [];
 
@@ -83,7 +83,7 @@ document.getElementById("start-game").addEventListener("click", () => {
     jugadores.push(jugador);
   }
 
-  iniciarJuego(jugadores);
+  await iniciarJuego(jugadores);
 
   document.getElementById("pre-menu-modal").style.display = "none";
 });
