@@ -52,6 +52,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  z-index: 1;
+  position: relative;
   font-size: var(--cell-font-size);
   font-weight: var(--font-weight-bold);
   text-align: center;
@@ -84,6 +86,40 @@ body {
 }
 .casilla.special {
   background: var(--special-color); 
+  min-height: 60px;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.ficha {
+  z-index: 3;
+  border-radius: 50%;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  line-height: 32px;
+  font-size: 2rem;
+  margin: 2px;
+  position: relative;
+}
+
+#fichas-salida {
+  position: absolute;
+  top: 5px;   /* antes estaba bottom */
+  left: 5px;
+  right: 5px;
+  height: 40px;   /* altura fija */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 
 /* ========== CENTRO DEL TABLERO ========== */
@@ -96,6 +132,8 @@ body {
     flex-direction: column;
     padding: var(--spacing-lg);
     background: var(--center-bg);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .logo-monopoly {

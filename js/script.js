@@ -7,8 +7,6 @@ let boardData;
 let game; 
 let ui; 
 
-// ...existing code...
-
 window.onload = () => {
   document.getElementById("pre-menu-modal").style.display = "block";
 };
@@ -26,76 +24,123 @@ export async function iniciarJuego(jugadores) {
   await cargarCasillas();
   dibujarFichas(jugadores);
   inicializarListenersDados();
+  actualizarTurno();
   
 }
 
 function dibujarFichas(jugadores) {
+    console.log("Dibujando fichas para:", jugadores); // <-- Agrega esto
   const fichasSalida = document.getElementById("fichas-salida");
   fichasSalida.innerHTML = ""; 
   jugadores.forEach((jugador) => {
     const ficha = document.createElement("span");
     ficha.className = "ficha";
-    ficha.textContent = jugador.token;
-    ficha.title = jugador.name;
+    
+    // Al crear el jugador:
+    const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
+    ficha.id = `ficha-${nombreLimpio}`; // <-- ID único
+    
+    ficha.textContent = jugador.token || "🔴";
+    ficha.title = jugador.nombre;
     ficha.style.fontSize = "2rem";
     ficha.style.marginRight = "5px";
     fichasSalida.appendChild(ficha);
+    console.log("Ficha agregada:", ficha); // <-- NUEVO LOG
   });
 }
-
-
-
+function moverFicha(jugador) {
+  const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
+  const ficha = document.getElementById(`ficha-${nombreLimpio}`);
+  const nuevaCasilla = document.querySelectorAll(".casilla")[jugador.posicion || 0];
+  if (ficha && nuevaCasilla) {
+    nuevaCasilla.appendChild(ficha);
+  }
+}
 
  // ...para que los dados sirvan despues de dar "iniciar juego"...
 function inicializarListenersDados() {
-  document.getElementById("btnLanzar").onclick = () => {
-    const dice1 = document.getElementById("dice1");
-    const dice2 = document.getElementById("dice2");
+  const dice1 = document.getElementById("dice1");
+  const dice2 = document.getElementById("dice2");
+  const resultadoTexto = document.getElementById("resultado");
 
-    // Agrega la clase de animación
+  // Tirada aleatoria
+  document.getElementById("btnLanzar").onclick = () => {
     dice1.classList.add("rolling");
     dice2.classList.add("rolling");
 
-    // Espera la animación antes de mostrar el resultado
     setTimeout(() => {
-      const resultado = game.tirarDadosAleatorio();
+      const resultado = game.rollDice();
+      const jugador = game.getJugadorActual();
+
+      // Mostrar resultado en los dados
+      dice1.textContent = resultado.dice1;
+      dice2.textContent = resultado.dice2;
+      resultadoTexto.textContent =
+        `${jugador.nombre} sacó ${resultado.dice1} y ${resultado.dice2} (total: ${resultado.total})`;
+
+      // Mover jugador
+      game.moverJugadorActual(resultado.total);
+      moverFicha(jugador);
+
+      if (resultado.isDouble && resultado.doublesCount < 3) {
+        // repite turno
+        resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
+      } else {
+        // Si no es doble o ya son 3 → pasa turno
+       game.siguienteTurno();
+      }
+    actualizarTurno();
+
+      dice1.classList.remove("rolling");
+      dice2.classList.remove("rolling");
+    }, 500); // mismo tiempo que la animación CSS
+  };
+
+  // Tirada manual
+document.getElementById("btnManual").onclick = () => {
+  const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
+  const dado2 = parseInt(document.getElementById("inputDado2").value, 10);
+
+  dice1.classList.add("rolling");
+  dice2.classList.add("rolling");
+
+  setTimeout(() => {
+    try {
+      const resultado = game.tirarDadosManual(dado1, dado2);
+      const jugador = game.getJugadorActual();
+
       dice1.textContent = resultado.dado1;
       dice2.textContent = resultado.dado2;
-      document.getElementById("resultado").textContent = `Total: ${resultado.suma}`;
+      resultadoTexto.textContent =
+        `${jugador.nombre} sacó ${resultado.dado1} y ${resultado.dado2} (total: ${resultado.suma})`;
 
-      // Quita la clase de animación
-      dice1.classList.remove("rolling");
-      dice2.classList.remove("rolling");
-    }, 500); // Debe coincidir con la duración de la animación
-  };
+      // Mover jugador
+      game.moverJugadorActual(resultado.suma);
+      moverFicha(jugador);
 
-  document.getElementById("btnManual").onclick = () => {
-    const dice1 = document.getElementById("dice1");
-    const dice2 = document.getElementById("dice2");
-    const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
-    const dado2 = parseInt(document.getElementById("inputDado2").value, 10);
-
-    dice1.classList.add("rolling");
-    dice2.classList.add("rolling");
-
-    setTimeout(() => {
-      try {
-        const resultado = game.tirarDadosManual(dado1, dado2);
-        dice1.textContent = resultado.dado1;
-        dice2.textContent = resultado.dado2;
-        document.getElementById("resultado").textContent = `Total: ${resultado.suma}`;
-      } catch (e) {
-        document.getElementById("resultado").textContent = e.message;
+      // 🔑 Control de dobles
+      if (resultado.dado1 === resultado.dado2) {
+        resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
+      } else {
+        game.siguienteTurno();
       }
-      dice1.classList.remove("rolling");
-      dice2.classList.remove("rolling");
-    }, 500);
-  };
+
+      actualizarTurno();
+    } catch (e) {
+      resultadoTexto.textContent = e.message;
+    }
+
+    dice1.classList.remove("rolling");
+    dice2.classList.remove("rolling");
+  }, 500);
+};
 }
 
-// Crear jugadores y propiedades mínimas
-const jugadores = [new Jugador("Jugador 1"), new Jugador("Jugador 2")];
-const propiedades = new Array(40).fill(null);
+function actualizarTurno() {
+  const jugador = game.getJugadorActual();
+  const turnoDiv = document.getElementById("turno-actual");
+  turnoDiv.textContent = `🎲 Turno de: ${jugador.nombre} ${jugador.token}`;
+}
 
 
 // --- CARGA DE CASILLAS ---
@@ -262,12 +307,3 @@ function mostrarCarta(tipo) {
     cartaCentro.style.display = "none";
   });
 }
-
-
-
-
-
-
-
-// inicializar
-cargarCasillas();
