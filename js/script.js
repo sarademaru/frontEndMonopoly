@@ -4,8 +4,8 @@ import Juego from "./game.js";
 import Jugador from "./player.js";
 
 let boardData;
-let game; 
-let ui; 
+let game;
+let ui;
 
 window.onload = () => {
   document.getElementById("pre-menu-modal").style.display = "block";
@@ -25,21 +25,21 @@ export async function iniciarJuego(jugadores) {
   dibujarFichas(jugadores);
   inicializarListenersDados();
   actualizarTurno();
-  
+
 }
 
 function dibujarFichas(jugadores) {
-    console.log("Dibujando fichas para:", jugadores); // <-- Agrega esto
+  console.log("Dibujando fichas para:", jugadores); // <-- Agrega esto
   const fichasSalida = document.getElementById("fichas-salida");
-  fichasSalida.innerHTML = ""; 
+  fichasSalida.innerHTML = "";
   jugadores.forEach((jugador) => {
     const ficha = document.createElement("span");
     ficha.className = "ficha";
-    
+
     // Al crear el jugador:
     const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
     ficha.id = `ficha-${nombreLimpio}`; // <-- ID único
-    
+
     ficha.textContent = jugador.token || "🔴";
     ficha.title = jugador.nombre;
     ficha.style.fontSize = "2rem";
@@ -51,90 +51,210 @@ function dibujarFichas(jugadores) {
 function moverFicha(jugador) {
   const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
   const ficha = document.getElementById(`ficha-${nombreLimpio}`);
-  const nuevaCasilla = document.querySelectorAll(".casilla")[jugador.posicion || 0];
+  const nuevaCasilla = document.querySelector(`.casilla[data-id="${jugador.posicion}"]`);
   if (ficha && nuevaCasilla) {
     nuevaCasilla.appendChild(ficha);
   }
 }
 
- // ...para que los dados sirvan despues de dar "iniciar juego"...
+// ...para que los dados sirvan despues de dar "iniciar juego"...
 function inicializarListenersDados() {
   const dice1 = document.getElementById("dice1");
   const dice2 = document.getElementById("dice2");
   const resultadoTexto = document.getElementById("resultado");
 
+  // Función auxiliar para enviar un jugador a la cárcel
+  function enviarACarcel(jugador) {
+    const POSICION_CARCEL = 10;
+    jugador.posicion = POSICION_CARCEL;
+    jugador.enCarcel = true;
+    jugador.turnosEnCarcel = 0;
+    moverFicha(jugador);
+    document.getElementById("resultado").textContent =
+      `${jugador.nombre} fue enviado a la cárcel 🚔`;
+  }
+
+  // -------------------------
   // Tirada aleatoria
+  // -------------------------
   document.getElementById("btnLanzar").onclick = () => {
     dice1.classList.add("rolling");
     dice2.classList.add("rolling");
 
     setTimeout(() => {
-      const resultado = game.rollDice();
       const jugador = game.getJugadorActual();
 
-      // Mostrar resultado en los dados
-      dice1.textContent = resultado.dice1;
-      dice2.textContent = resultado.dice2;
-      resultadoTexto.textContent =
-        `${jugador.nombre} sacó ${resultado.dice1} y ${resultado.dice2} (total: ${resultado.total})`;
+      // ⚖️ Si está en la cárcel
+      if (jugador.enCarcel) {
+        const resultado = game.rollDice();
+        dice1.textContent = resultado.dice1;
+        dice2.textContent = resultado.dice2;
 
-      // Mover jugador
-      game.moverJugadorActual(resultado.total);
-      moverFicha(jugador);
-
-      if (resultado.isDouble && resultado.doublesCount < 3) {
-        // repite turno
-        resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
+        if (resultado.isDouble) {
+          jugador.enCarcel = false;
+          jugador.turnosEnCarcel = 0;
+          resultadoTexto.textContent =
+            `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
+          game.moverJugadorActual(resultado.total);
+          moverFicha(jugador);
+        } else {
+          jugador.turnosEnCarcel++;
+          if (jugador.turnosEnCarcel >= 3) {
+            jugador.enCarcel = false;
+            jugador.turnosEnCarcel = 0;
+            jugador.dinero -= 50;
+            resultadoTexto.textContent =
+              `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
+          } else {
+            resultadoTexto.textContent =
+              `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+          }
+          game.siguienteTurno();
+          actualizarTurno();
+          dice1.classList.remove("rolling");
+          dice2.classList.remove("rolling");
+          return; // 👈 detenemos aquí
+        }
       } else {
-        // Si no es doble o ya son 3 → pasa turno
-       game.siguienteTurno();
-      }
-    actualizarTurno();
+        // Jugador normal
+        const resultado = game.rollDice();
+        dice1.textContent = resultado.dice1;
+        dice2.textContent = resultado.dice2;
+        resultadoTexto.textContent =
+          `${jugador.nombre} sacó ${resultado.dice1} y ${resultado.dice2} (total: ${resultado.total})`;
 
-      dice1.classList.remove("rolling");
-      dice2.classList.remove("rolling");
-    }, 500); // mismo tiempo que la animación CSS
-  };
+        game.moverJugadorActual(resultado.total);
+        moverFicha(jugador);
 
-  // Tirada manual
-document.getElementById("btnManual").onclick = () => {
-  const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
-  const dado2 = parseInt(document.getElementById("inputDado2").value, 10);
+        // Si cae en "Ve a la cárcel"
+        const casilla = boardData.bottom
+          .concat(boardData.left, boardData.top, boardData.right)
+          .find(c => c.id === jugador.posicion);
 
-  dice1.classList.add("rolling");
-  dice2.classList.add("rolling");
+        console.log("DEBUG ALEATORIO → cayó en:", {
+          id: jugador.posicion,
+          nombre: casilla?.name,
+          type: casilla?.type,
+          action: casilla?.action
+        });
 
-  setTimeout(() => {
-    try {
-      const resultado = game.tirarDadosManual(dado1, dado2);
-      const jugador = game.getJugadorActual();
+        if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
+          enviarACarcel(jugador);
+          game.siguienteTurno();
+          actualizarTurno();
+          dice1.classList.remove("rolling");
+          dice2.classList.remove("rolling");
+          return;
+        }
 
-      dice1.textContent = resultado.dado1;
-      dice2.textContent = resultado.dado2;
-      resultadoTexto.textContent =
-        `${jugador.nombre} sacó ${resultado.dado1} y ${resultado.dado2} (total: ${resultado.suma})`;
-
-      // Mover jugador
-      game.moverJugadorActual(resultado.suma);
-      moverFicha(jugador);
-
-      // 🔑 Control de dobles
-      if (resultado.dado1 === resultado.dado2) {
-        resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
-      } else {
-        game.siguienteTurno();
+        if (resultado.isDouble && resultado.doublesCount < 3) {
+          resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
+        } else {
+          game.siguienteTurno();
+        }
       }
 
       actualizarTurno();
-    } catch (e) {
-      resultadoTexto.textContent = e.message;
-    }
+      dice1.classList.remove("rolling");
+      dice2.classList.remove("rolling");
+    }, 500);
+  };
 
-    dice1.classList.remove("rolling");
-    dice2.classList.remove("rolling");
-  }, 500);
-};
+  // -------------------------
+  // Tirada manual
+  // -------------------------
+  document.getElementById("btnManual").onclick = () => {
+    const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
+    const dado2 = parseInt(document.getElementById("inputDado2").value, 10);
+
+    dice1.classList.add("rolling");
+    dice2.classList.add("rolling");
+
+    setTimeout(() => {
+      try {
+        const jugador = game.getJugadorActual();
+
+        // ⚖️ Si está en la cárcel
+        if (jugador.enCarcel) {
+          const resultado = game.tirarDadosManual(dado1, dado2);
+          dice1.textContent = resultado.dado1;
+          dice2.textContent = resultado.dado2;
+
+          if (resultado.dado1 === resultado.dado2) {
+            jugador.enCarcel = false;
+            jugador.turnosEnCarcel = 0;
+            resultadoTexto.textContent =
+              `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.suma} casillas.`;
+            game.moverJugadorActual(resultado.suma);
+            moverFicha(jugador);
+          } else {
+            jugador.turnosEnCarcel++;
+            if (jugador.turnosEnCarcel >= 3) {
+              jugador.enCarcel = false;
+              jugador.turnosEnCarcel = 0;
+              jugador.dinero -= 50;
+              resultadoTexto.textContent =
+                `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
+            } else {
+              resultadoTexto.textContent =
+                `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+            }
+            game.siguienteTurno();
+            actualizarTurno();
+            dice1.classList.remove("rolling");
+            dice2.classList.remove("rolling");
+            return;
+          }
+        } else {
+          // Jugador normal
+          const resultado = game.tirarDadosManual(dado1, dado2);
+          dice1.textContent = resultado.dado1;
+          dice2.textContent = resultado.dado2;
+          resultadoTexto.textContent =
+            `${jugador.nombre} sacó ${resultado.dado1} y ${resultado.dado2} (total: ${resultado.suma})`;
+
+          game.moverJugadorActual(resultado.suma);
+          moverFicha(jugador);
+
+          // Si cae en "Ve a la cárcel"
+          const casilla = boardData.bottom
+            .concat(boardData.left, boardData.top, boardData.right)
+            .find(c => c.id === jugador.posicion);
+
+          console.log("DEBUG ALEATORIO → cayó en:", {
+            id: jugador.posicion,
+            nombre: casilla?.name,
+            type: casilla?.type,
+            action: casilla?.action
+          });
+
+          if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
+            enviarACarcel(jugador);
+            game.siguienteTurno();
+            actualizarTurno();
+            dice1.classList.remove("rolling");
+            dice2.classList.remove("rolling");
+            return;
+          }
+
+          if (resultado.dado1 === resultado.dado2) {
+            resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
+          } else {
+            game.siguienteTurno();
+          }
+        }
+
+        actualizarTurno();
+      } catch (e) {
+        resultadoTexto.textContent = e.message;
+      }
+
+      dice1.classList.remove("rolling");
+      dice2.classList.remove("rolling");
+    }, 500);
+  };
 }
+
 
 function actualizarTurno() {
   const jugador = game.getJugadorActual();
@@ -145,17 +265,17 @@ function actualizarTurno() {
 
 // --- CARGA DE CASILLAS ---
 async function cargarCasillas() {
-      try {
-        let data;
-        try {
-          const respBackend = await fetch("http://127.0.0.1:5000/board");
-          if (!respBackend.ok) throw new Error("Backend no disponible");
-          data = await respBackend.json();
-        } catch (e) {
-          //const respLocal = await fetch("json/board.json");
-          //data = await respLocal.json();
-        }
-        boardData = data; // Guardar todo el JSON
+  try {
+    let data;
+    try {
+      const respBackend = await fetch("http://127.0.0.1:5000/board");
+      if (!respBackend.ok) throw new Error("Backend no disponible");
+      data = await respBackend.json();
+    } catch (e) {
+      //const respLocal = await fetch("json/board.json");
+      //data = await respLocal.json();
+    }
+    boardData = data; // Guardar todo el JSON
 
     const casillas = [...data.bottom, ...data.left, ...data.top, ...data.right];
     const tablero = document.getElementById("tablero");
@@ -176,8 +296,8 @@ async function cargarCasillas() {
       // Construcción del contenido con innerHTML
       let contenido = "";
 
-       // Estado encima de la casilla (solo propiedades)
-       if (c.type === "property") {
+      // Estado encima de la casilla (solo propiedades)
+      if (c.type === "property") {
         contenido += `<div class="estado" id="estado-${c.id}">Disponible</div>`;
       }
 
@@ -329,7 +449,7 @@ function mostrarCarta(tipo) {
 
 // Helper para actualizar estado visual de una propiedad
 // Uso: window.actualizarEstadoPropiedad(1, { ownerColor: "#ff0000", houses: 2, hotel: false, ownerName: "Jugador 1" })
-window.actualizarEstadoPropiedad = function(id, { ownerColor = null, houses = 0, hotel = false, ownerName = "" } = {}) {
+window.actualizarEstadoPropiedad = function (id, { ownerColor = null, houses = 0, hotel = false, ownerName = "" } = {}) {
   const estadoEl = document.getElementById(`estado-${id}`);
   const edifEl = document.getElementById(`edif-${id}`);
   if (!estadoEl) return;
@@ -347,7 +467,7 @@ window.actualizarEstadoPropiedad = function(id, { ownerColor = null, houses = 0,
     // elegir color de texto legible
     try {
       const rgb = getComputedStyle(document.body).color; // trigger computed style availability
-    } catch {}
+    } catch { }
     estadoEl.style.color = "#fff";
   }
   if (edifEl) {
@@ -359,5 +479,5 @@ window.actualizarEstadoPropiedad = function(id, { ownerColor = null, houses = 0,
       edifEl.textContent = "";
     }
   }
-}; 
+};
 
