@@ -145,10 +145,17 @@ function actualizarTurno() {
 
 // --- CARGA DE CASILLAS ---
 async function cargarCasillas() {
-  try {
-    const resp = await fetch("json/board.json");
-    const data = await resp.json();
-    boardData = data; // Guardar todo el JSON
+      try {
+        let data;
+        try {
+          const respBackend = await fetch("http://127.0.0.1:5000/board");
+          if (!respBackend.ok) throw new Error("Backend no disponible");
+          data = await respBackend.json();
+        } catch (e) {
+          //const respLocal = await fetch("json/board.json");
+          //data = await respLocal.json();
+        }
+        boardData = data; // Guardar todo el JSON
 
     const casillas = [...data.bottom, ...data.left, ...data.top, ...data.right];
     const tablero = document.getElementById("tablero");
@@ -156,6 +163,8 @@ async function cargarCasillas() {
     casillas.forEach((c, i) => {
       const div = document.createElement("div");
       div.classList.add("casilla");
+      div.dataset.id = c.id;
+      div.dataset.type = c.type || "";
 
       if (c.type) {
         div.classList.add(c.type);
@@ -167,6 +176,11 @@ async function cargarCasillas() {
       // Construcción del contenido con innerHTML
       let contenido = "";
 
+       // Estado encima de la casilla (solo propiedades)
+       if (c.type === "property") {
+        contenido += `<div class="estado" id="estado-${c.id}">Disponible</div>`;
+      }
+
       if (c.type === "property" && c.color) {
         contenido += `<div class="color-bar" style="background-color:${c.color};"></div>`;
       }
@@ -175,6 +189,11 @@ async function cargarCasillas() {
         <span class="nombre-completo">${c.name}</span>
         <span class="abreviacion">${abrev}</span>
       `;
+
+      // Contenedor de edificaciones (casas/hotel) solo para propiedades
+      if (c.type === "property") {
+        contenido += `<div class="edificaciones" id="edif-${c.id}"></div>`;
+      }
 
       // Si es la casilla de salida (id 0), agrega el contenedor de fichas
       if (c.id === 0) {
@@ -307,3 +326,38 @@ function mostrarCarta(tipo) {
     cartaCentro.style.display = "none";
   });
 }
+
+// Helper para actualizar estado visual de una propiedad
+// Uso: window.actualizarEstadoPropiedad(1, { ownerColor: "#ff0000", houses: 2, hotel: false, ownerName: "Jugador 1" })
+window.actualizarEstadoPropiedad = function(id, { ownerColor = null, houses = 0, hotel = false, ownerName = "" } = {}) {
+  const estadoEl = document.getElementById(`estado-${id}`);
+  const edifEl = document.getElementById(`edif-${id}`);
+  if (!estadoEl) return;
+  if (!ownerColor) {
+    estadoEl.textContent = "Disponible";
+    estadoEl.classList.remove("ocupado");
+    estadoEl.classList.add("disponible");
+    estadoEl.style.backgroundColor = "#ffffff";
+    estadoEl.style.color = "#000";
+  } else {
+    estadoEl.classList.remove("disponible");
+    estadoEl.classList.add("ocupado");
+    estadoEl.textContent = ownerName ? ownerName : "";
+    estadoEl.style.backgroundColor = ownerColor;
+    // elegir color de texto legible
+    try {
+      const rgb = getComputedStyle(document.body).color; // trigger computed style availability
+    } catch {}
+    estadoEl.style.color = "#fff";
+  }
+  if (edifEl) {
+    if (hotel) {
+      edifEl.textContent = "🏨";
+    } else if (houses > 0) {
+      edifEl.textContent = "🏠".repeat(Math.min(4, houses));
+    } else {
+      edifEl.textContent = "";
+    }
+  }
+}; 
+

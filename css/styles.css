@@ -1,4 +1,3 @@
-
 /* ========== IMPORTACIONES MODULARES ========== */
 @import url('./base/variables.css');
 @import url('./components/modal.css');
@@ -62,6 +61,8 @@ body {
   background: var(--cell-bg);
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-light);
+  position: relative; /* para ubicar badges dentro de la casilla */
+  overflow: hidden; /* evita desbordes por badges/edificaciones */
 }
 
 .color-bar {
@@ -288,8 +289,55 @@ body {
     justify-content: center;
 }
 
+/* Badge de estado de propiedad */
+.estado {
+  position: absolute;
+  top: 2px; /* dentro de la casilla para no romper responsive */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  line-height: 1;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.estado.ocupado {
+  color: #ffffff;
+}
+
+/* Contenedor de casas/hotel */
+.edificaciones {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  user-select: none;
+}
+
 /* ========== RESPONSIVE PARA TABLERO Y DADOS ========== */
 @media (max-width: 600px) {
+    /* Ajustes para que badges y texto no rompan el layout */
+    .casilla {
+        padding-top: 14px; /* espacio para el badge */
+    }
+    .estado {
+        font-size: 0.5rem;
+        padding: 1px 4px;
+        border-radius: 6px;
+    }
+    .edificaciones {
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        bottom: 2px;
+    }
     .casilla .nombre-completo {
         display: none;
     }
@@ -317,78 +365,38 @@ body {
         width: 120px;
         margin-bottom: var(--spacing-xs);
     }
-}
+ }
 
-@media (max-width: 480px) {
-    body {
-        padding: var(--spacing-sm) 0;
-    }
-    
-    #tablero {
-        width: 95vmin;
-        margin-top: var(--spacing-sm);
-    }
-    
-    #dice-container {
-        gap: var(--spacing-lg);
-        margin-top: var(--spacing-sm);
-    }
-    
-    .cartas {
-        gap: var(--spacing-lg);
-    }
-    
-    .cartas img {
-        max-width: 150px;
-        height: 90px;
-        margin: var(--spacing-sm);
-    }
-    
-    .logo-monopoly {
-        margin-bottom: var(--spacing-lg);
-    }
-}
-
-
-
-
-/* ========== REVISAR ESTA OPCIONNNNNN ========== */
-@media (max-width: 430px) {
-    body {
-        padding: var(--spacing-sm) 0;
-    }
-    
-    #tablero {
-        width: 95vmin;
-        margin-top: var(--spacing-sm);
-    }
-    
-    #dice-container {
-        gap: var(--spacing-lg);
-        margin-top: var(--spacing-sm);
-    }
-    
-    .cartas {
-        gap: var(--spacing-lg);
-    }
-    
-    .cartas img {
-        max-width: 140px;
-        height: 90px;
-        margin: var(--spacing-sm);
-    }
-    
-    .logo-monopoly {
-        max-width: 300px;
-    }
-}
-
-
-
-
-
-
-
+ @media (max-width: 480px) {
+     body {
+         padding: var(--spacing-sm) 0;
+     }
+     
+     #tablero {
+         width: 95vmin;
+         margin-top: var(--spacing-sm);
+         overflow: hidden; /* evita scroll por elementos absolutos en bordes */
+     }
+     
+     #dice-container {
+         gap: var(--spacing-lg);
+         margin-top: var(--spacing-sm);
+     }
+     
+     .cartas {
+         gap: var(--spacing-lg);
+     }
+     
+     .cartas img {
+         max-width: 150px;
+         height: 90px;
+         margin: var(--spacing-sm);
+     }
+     
+     .logo-monopoly {
+         margin-bottom: var(--spacing-lg);
+     }
+ }
 
 @media (max-width: 320px) {
     .die {
@@ -480,7 +488,3 @@ body {
         transition: none;
     }
 }
-
-
-
-
