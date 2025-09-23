@@ -29,7 +29,7 @@ export async function iniciarJuego(jugadores) {
 }
 
 function dibujarFichas(jugadores) {
-  console.log("Dibujando fichas para:", jugadores); // <-- Agrega esto
+  console.log("Dibujando fichas para:", jugadores); 
   const fichasSalida = document.getElementById("fichas-salida");
   fichasSalida.innerHTML = "";
   jugadores.forEach((jugador) => {
@@ -45,7 +45,7 @@ function dibujarFichas(jugadores) {
     ficha.style.fontSize = "2rem";
     ficha.style.marginRight = "5px";
     fichasSalida.appendChild(ficha);
-    console.log("Ficha agregada:", ficha); // <-- NUEVO LOG
+    console.log("Ficha agregada:", ficha); 
   });
 }
 function moverFicha(jugador) {
@@ -84,7 +84,7 @@ function inicializarListenersDados() {
     setTimeout(() => {
       const jugador = game.getJugadorActual();
 
-      // ⚖️ Si está en la cárcel
+      // Si está en la cárcel
       if (jugador.enCarcel) {
         const resultado = game.rollDice();
         dice1.textContent = resultado.dice1;
@@ -94,7 +94,7 @@ function inicializarListenersDados() {
           jugador.enCarcel = false;
           jugador.turnosEnCarcel = 0;
           resultadoTexto.textContent =
-            `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
+            `${jugador.nombre} sacó pares 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
           game.moverJugadorActual(resultado.total);
           moverFicha(jugador);
         } else {
@@ -104,16 +104,16 @@ function inicializarListenersDados() {
             jugador.turnosEnCarcel = 0;
             jugador.dinero -= 50;
             resultadoTexto.textContent =
-              `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
+              `${jugador.nombre} no sacó pares en 3 turnos. Paga $50 y sale de la cárcel.`;
           } else {
             resultadoTexto.textContent =
-              `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+              `${jugador.nombre} no sacó pares. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
           }
           game.siguienteTurno();
           actualizarTurno();
           dice1.classList.remove("rolling");
           dice2.classList.remove("rolling");
-          return; // 👈 detenemos aquí
+          return; // detenemos aquí
         }
       } else {
         // Jugador normal
@@ -131,13 +131,6 @@ function inicializarListenersDados() {
           .concat(boardData.left, boardData.top, boardData.right)
           .find(c => c.id === jugador.posicion);
 
-        console.log("DEBUG ALEATORIO → cayó en:", {
-          id: jugador.posicion,
-          nombre: casilla?.name,
-          type: casilla?.type,
-          action: casilla?.action
-        });
-
         if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
           enviarACarcel(jugador);
           game.siguienteTurno();
@@ -147,8 +140,18 @@ function inicializarListenersDados() {
           return;
         }
 
+        // Chance
+        if (casilla && casilla.type === "chance") {
+          mostrarCarta("chance");
+        }
+
+        // Comunidad
+        if (casilla && casilla.type === "community_chest") {
+          mostrarCarta("community_chest");
+        }
+
         if (resultado.isDouble && resultado.doublesCount < 3) {
-          resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
+          resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
         } else {
           game.siguienteTurno();
         }
@@ -184,7 +187,7 @@ function inicializarListenersDados() {
             jugador.enCarcel = false;
             jugador.turnosEnCarcel = 0;
             resultadoTexto.textContent =
-              `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.suma} casillas.`;
+              `${jugador.nombre} sacó pares 🎉 y sale de la cárcel. Avanza ${resultado.suma} casillas.`;
             game.moverJugadorActual(resultado.suma);
             moverFicha(jugador);
           } else {
@@ -194,10 +197,10 @@ function inicializarListenersDados() {
               jugador.turnosEnCarcel = 0;
               jugador.dinero -= 50;
               resultadoTexto.textContent =
-                `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
+                `${jugador.nombre} no sacó pares en 3 turnos. Paga $50 y sale de la cárcel.`;
             } else {
               resultadoTexto.textContent =
-                `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+                `${jugador.nombre} no sacó pares. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
             }
             game.siguienteTurno();
             actualizarTurno();
@@ -221,13 +224,6 @@ function inicializarListenersDados() {
             .concat(boardData.left, boardData.top, boardData.right)
             .find(c => c.id === jugador.posicion);
 
-          console.log("DEBUG ALEATORIO → cayó en:", {
-            id: jugador.posicion,
-            nombre: casilla?.name,
-            type: casilla?.type,
-            action: casilla?.action
-          });
-
           if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
             enviarACarcel(jugador);
             game.siguienteTurno();
@@ -237,8 +233,18 @@ function inicializarListenersDados() {
             return;
           }
 
+          // Chance
+          if (casilla && casilla.type === "chance") {
+            mostrarCarta("chance");
+          }
+
+          // Comunidad
+          if (casilla && casilla.type === "community_chest") {
+            mostrarCarta("community_chest");
+          }
+
           if (resultado.dado1 === resultado.dado2) {
-            resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
+            resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
           } else {
             game.siguienteTurno();
           }
@@ -406,10 +412,10 @@ function mostrarDetalles(c) {
       contenido = `<p><b>Impuesto:</b> $${Math.abs(c.action.money)}</p>`;
       break;
     case "community_chest":
-      mostrarCarta("community_chest");
+      // mostrarCarta("community_chest");
       return;
     case "chance":
-      mostrarCarta("chance");
+      // mostrarCarta("chance");
       return;
     case "special":
       contenido = `<p>Casilla especial.</p>`;
@@ -442,9 +448,9 @@ function mostrarCarta(tipo) {
   textoCarta.textContent = carta.description;
   cartaCentro.style.display = "flex";
 
-  cartaCentro.addEventListener("click", () => {
+  cartaCentro.onclick = () => {
     cartaCentro.style.display = "none";
-  });
+  };
 }
 
 // Helper para actualizar estado visual de una propiedad
