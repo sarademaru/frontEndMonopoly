@@ -51,8 +51,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  z-index: 1;
-  position: relative;
   font-size: var(--cell-font-size);
   font-weight: var(--font-weight-bold);
   text-align: center;
@@ -87,40 +85,6 @@ body {
 }
 .casilla.special {
   background: var(--special-color); 
-  min-height: 60px;
-  min-width: 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  position: relative;
-}
-
-.ficha {
-  z-index: 3;
-  border-radius: 50%;
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  text-align: center;
-  line-height: 32px;
-  font-size: 2rem;
-  margin: 2px;
-  position: relative;
-}
-
-#fichas-salida {
-  position: absolute;
-  top: 5px;   /* antes estaba bottom */
-  left: 5px;
-  right: 5px;
-  height: 40px;   /* altura fija */
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
 }
 
 /* ========== CENTRO DEL TABLERO ========== */
@@ -133,8 +97,6 @@ body {
     flex-direction: column;
     padding: var(--spacing-lg);
     background: var(--center-bg);
-    z-index: 0;
-    pointer-events: none;
 }
 
 .logo-monopoly {
@@ -487,4 +449,71 @@ body {
     .dice-container button {
         transition: none;
     }
+}
+
+
+/* ========== PANEL DE ACCIONES ========== */
+.panel-acciones {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(360px, 90vw);
+  max-height: 70vh;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+}
+.panel-acciones.oculto { display: none; }
+.acciones-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f6f7f9;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+#acciones-cerrar {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+.acciones-detalle {
+  padding: 10px 12px;
+  color: #333;
+  font-size: 0.9rem;
+}
+.acciones-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+}
+.acciones-botones button {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primario { background: #e11d48; }
+.btn-secundario { background: #0ea5e9; }
+.btn-neutro { background: #64748b; }
+.btn-peligro { background: #ef4444; }
+.btn-exito { background: #22c55e; }
+
+@media (max-width: 480px) {
+  .panel-acciones {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    bottom: 8px;
+    max-height: 60vh;
+  }
 }

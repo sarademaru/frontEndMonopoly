@@ -19,15 +19,26 @@ export default class UI {
     const { dado1, dado2, suma } = this.game.tirarDadosAleatorio();
 
     this.updateDiceDisplay({ dice1: dado1, dice2: dado2 });
+    const jugadorActual = this.game.getJugadorActual();
     document.getElementById("resultado").innerText =
-        `${this.game.getJugadorActual().nombre} sacó ${dado1} y ${dado2} (Total: ${suma})`;
+        `${jugadorActual.nombre} sacó ${dado1} y ${dado2} (Total: ${suma})`;
 
     // mover jugador
     this.game.moverJugadorActual(suma);
 
     // actualizar ficha visual
-    colocarFicha(this.game.getJugadorActual(), document.getElementById("tablero"));
+    if (typeof window.colocarFicha === 'function') {
+      window.colocarFicha(jugadorActual, document.getElementById("tablero"));
+    }
 
+    // Procesar acciones de la casilla donde cayó
+    if (typeof window.procesarCaidaEnCasilla === 'function') {
+      window.procesarCaidaEnCasilla(jugadorActual, this.game);
+    }
+
+    // No cambiamos de turno aquí; el panel de acciones decidirá cuándo finalizar el turno
+    rollDiceBtn.disabled = false;
+  
     // pasar turno
     this.game.siguienteTurno();
 
@@ -45,6 +56,10 @@ export default class UI {
       this.showResultText(`Usaste 🎲 ${result.dado1} y ${result.dado2} (Total: ${result.suma})`);
       if (typeof this.game.moverJugadorActual === 'function') {
         this.game.moverJugadorActual(result.suma);
+      }
+      const jugadorActual = this.game.getJugadorActual();
+      if (typeof window.procesarCaidaEnCasilla === 'function') {
+        window.procesarCaidaEnCasilla(jugadorActual, this.game);
       }
     } catch (err) {
       alert(err.message);
