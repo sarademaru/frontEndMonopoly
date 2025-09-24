@@ -22,14 +22,18 @@ export default class Jugador {
   }
 
   comprarPropiedad(propiedad) {
-    if (this.dinero >= propiedad.precio) {
-      this.dinero -= propiedad.precio;
-      this.propiedades.push(propiedad);
-      propiedad.dueno = this;
-      return true;
-    }
-    return false;
+  // Soporta "precio" y "price"
+  const precio = propiedad.precio ?? propiedad.price;
+
+  if (this.dinero >= precio) {
+    this.dinero -= precio;
+    this.propiedades.push(propiedad);
+    propiedad.owner = this; // puedes guardar referencia al jugador
+    return true;
   }
+  return false;
+}
+
 }
 
 // Exportar la clase para su uso en otros archivos

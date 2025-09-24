@@ -23,6 +23,7 @@ export async function iniciarJuego(jugadores) {
 
   await cargarCasillas();
   dibujarFichas(jugadores);
+  dibujarPanelJugadores(jugadores);
   inicializarListenersDados();
   actualizarTurno();
 
@@ -95,6 +96,7 @@ function inicializarListenersDados() {
       if (jugador.dinero >= casilla.price) {
         jugador.dinero -= casilla.price;
         casilla.owner = jugador.nombre;
+        jugador.propiedades.push(casilla);
         alert(`${jugador.nombre} compró ${casilla.name} por $${casilla.price}`);
       } else {
         alert(`${jugador.nombre} no tiene suficiente dinero 💸`);
@@ -174,10 +176,10 @@ function inicializarListenersDados() {
 
         // Cartas
         if (casilla && casilla.type === "chance") {
-          mostrarCarta("chance");
+          mostrarCarta("chance", jugador);
         }
         if (casilla && casilla.type === "community_chest") {
-          mostrarCarta("community_chest");
+          mostrarCarta("community_chest", jugador);
         }
 
         // Propiedades disponibles
@@ -323,8 +325,6 @@ function inicializarListenersDados() {
   };
 }
 
-
-
 function actualizarTurno() {
   const jugador = game.getJugadorActual();
   const turnoDiv = document.getElementById("turno-actual");
@@ -439,28 +439,31 @@ async function cargarCasillas() {
  * options: { fromLanding: boolean, shouldRepeat: boolean }
  */
 function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shouldRepeat: false }) {
-  // crear modal (o reutilizar uno existente)
   let modal = document.getElementById("detalleModal");
-  // si no existe, crearlo (mantengo la estructura previa para compatibilidad)
+
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "detalleModal";
-    modal.innerHTML = `<div class="modal-content"><h3 id="modalNombre"></h3><div id="modalContenido"></div><div id="modalActions" style="margin-top:12px;"></div></div>`;
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3 id="modalNombre"></h3>
+        <div id="modalContenido"></div>
+        <div id="modalActions" style="margin-top:12px;"></div>
+      </div>`;
     document.body.appendChild(modal);
 
     modal.addEventListener("click", (e) => {
-      // clic fuera del contenido o en un botón cerrar puede cerrar
       if (e.target.id === "detalleModal") {
         modal.style.display = "none";
       }
     });
   }
 
-  // preparar contenido dinámico
   document.getElementById("modalNombre").textContent = c.name;
 
+  // ----- Contenido del modal -----
   let contenido = "";
-  if (c.type === "property" || c.type === "railroad" || c.type === "utility") {
+  if (["property", "railroad", "utility"].includes(c.type)) {
     contenido += `<p><b>Precio:</b> $${c.price ?? "—"}</p>`;
     contenido += `<p><b>Hipoteca:</b> $${c.mortgage ?? "—"}</p>`;
     if (c.rent) {
@@ -476,74 +479,76 @@ function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shou
       }
     }
   } else {
-    // tipos no-propiedad (tax, special...)
     contenido += `<p>Tipo: ${c.type}</p>`;
-    if (c.action && c.action.money) contenido += `<p><b>Acción:</b> ${c.action.money}</p>`;
+    if (c.action && c.action.money) {
+      contenido += `<p><b>Acción:</b> ${c.action.money}</p>`;
+    }
   }
 
   document.getElementById("modalContenido").innerHTML = contenido;
 
-  // Actions (botones)
+  // ----- Acciones -----
   const actionsEl = document.getElementById("modalActions");
-  actionsEl.innerHTML = ""; // limpiar
+  actionsEl.innerHTML = "";
 
-  // Si es propiedad y está disponible, mostrar botones (si hay jugador)
+  // Si es propiedad libre, permitir compra
   if (["property", "railroad", "utility"].includes(c.type) && !c.owner) {
-    // Comprar
     const buyBtn = document.createElement("button");
     buyBtn.textContent = "Comprar";
     buyBtn.className = "btn";
-    // Si no hay jugador (apertura por click), deshabilitar compra
+
+    // Si no hay jugador (solo abrir modal desde click), deshabilitar compra
     if (!jugador) buyBtn.disabled = true;
 
     buyBtn.onclick = () => {
-      if (!jugador) return;
-      if ((jugador.dinero ?? jugador.money ?? 0) >= (c.price ?? 0)) {
-        // restar dinero (normalizo nombres)
-        if (typeof jugador.dinero === "number") jugador.dinero -= c.price;
-        else jugador.money -= c.price;
-
+      if (jugador && jugador.comprarPropiedad(c)) {
         c.owner = jugador.nombre;
+        actualizarPanelJugadores(game.jugadores);
 
-        // actualizar marcador visual de propiedad
+        // actualizar en tablero
         const estadoEl = document.getElementById(`estado-${c.id}`);
         if (estadoEl) {
-          estadoEl.innerHTML = `
-    <span class="owner-token">${jugador.token}</span> 
-    <span class="owner-name">${jugador.nombre}</span>
-  `;
+          // Solo cambiamos el texto de estado
+          estadoEl.textContent = "Ocupado";
           estadoEl.classList.remove("disponible");
           estadoEl.classList.add("ocupado");
+
+          // Agregar dueño en un contenedor aparte
+          let ownerInfo = document.getElementById(`owner-${c.id}`);
+          if (!ownerInfo) {
+            const casillaDiv = document.querySelector(`.casilla[data-id="${c.id}"]`);
+            ownerInfo = document.createElement("div");
+            ownerInfo.id = `owner-${c.id}`;
+            ownerInfo.classList.add("owner-info");
+            casillaDiv.appendChild(ownerInfo);
+          }
+          ownerInfo.innerHTML = `
+    <span class="owner-token">${jugador.token}</span>
+    <span class="owner-name">${jugador.nombre}</span>
+  `;
         }
 
-
-        // mensaje y cerrar modal
-        document.getElementById("resultado").textContent = `${jugador.nombre} compró ${c.name} por $${c.price}`;
+        document.getElementById("resultado").textContent =
+          `${jugador.nombre} compró ${c.name} por $${c.price}`;
       } else {
         alert("No tienes suficiente dinero para comprar esta propiedad.");
       }
+
       modal.style.display = "none";
 
-      // si venimos de una tirada (fromLanding), avancemos el turno según shouldRepeat
       if (options.fromLanding) {
-        if (!options.shouldRepeat) {
-          game.siguienteTurno();
-        }
+        if (!options.shouldRepeat) game.siguienteTurno();
         actualizarTurno();
       }
     };
 
-    // Cancelar / Cerrar
     const cancelBtn = document.createElement("button");
     cancelBtn.textContent = "Cancelar";
     cancelBtn.className = "btn";
     cancelBtn.onclick = () => {
       modal.style.display = "none";
-      // si venimos de una tirada (fromLanding), avanzamos el turno según shouldRepeat
       if (options.fromLanding) {
-        if (!options.shouldRepeat) {
-          game.siguienteTurno();
-        }
+        if (!options.shouldRepeat) game.siguienteTurno();
         actualizarTurno();
       }
     };
@@ -551,7 +556,6 @@ function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shou
     actionsEl.appendChild(buyBtn);
     actionsEl.appendChild(cancelBtn);
   } else {
-    // Si la casilla NO es una propiedad libre, mostrar solo botón cerrar
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "Cerrar";
     closeBtn.className = "btn";
@@ -559,12 +563,38 @@ function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shou
     actionsEl.appendChild(closeBtn);
   }
 
-  // mostrar modal
   modal.style.display = "flex";
 }
 
+function aplicarAccionCarta(carta, jugador) {
+  if (!carta.action) return;
 
-function mostrarCarta(tipo) {
+  // Acción de dinero
+  if (carta.action.money) {
+    jugador.dinero += carta.action.money; // suma o resta
+    document.getElementById("resultado").textContent =
+      `${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)}`;
+  }
+
+  // Ir a la cárcel
+  if (carta.action.goTo && carta.action.goTo.toLowerCase() === "jail") {
+    enviarACarcel(jugador);
+  }
+
+  // Mover a una posición
+  if (carta.action.moveTo !== undefined) {
+    jugador.posicion = carta.action.moveTo;
+    moverFicha(jugador);
+    document.getElementById("resultado").textContent =
+      `${jugador.nombre} se mueve a la casilla ${carta.action.moveTo}`;
+  }
+
+  // 👇 actualizar panel de jugadores en pantalla
+  actualizarPanelJugadores(game.jugadores);
+}
+
+
+function mostrarCarta(tipo, jugador) {
   const cartaCentro = document.getElementById("cartaCentro");
   const imgCarta = document.getElementById("imgCarta");
   const textoCarta = document.getElementById("textoCarta");
@@ -584,8 +614,39 @@ function mostrarCarta(tipo) {
 
   cartaCentro.onclick = () => {
     cartaCentro.style.display = "none";
+    aplicarAccionCarta(carta, jugador);
   };
 }
+
+function dibujarPanelJugadores(jugadores) {
+  const panel = document.getElementById("panel-jugadores");
+  panel.innerHTML = ""; // limpiar
+
+  jugadores.forEach(j => {
+    const div = document.createElement("div");
+    div.classList.add("jugador-panel");
+    div.id = `panel-${j.nombre}`;
+
+    div.innerHTML = `
+      <h4>${j.token} ${j.nombre}</h4>
+      <p>Dinero: <span class="dinero">$${j.dinero}</span></p>
+      <p>Propiedades: <span class="propiedades">${j.propiedades.length}</span></p>
+    `;
+
+    panel.appendChild(div);
+  });
+}
+
+function actualizarPanelJugadores(jugadores) {
+  jugadores.forEach(j => {
+    const div = document.getElementById(`panel-${j.nombre}`);
+    if (!div) return;
+
+    div.querySelector(".dinero").textContent = `$${j.dinero}`;
+    div.querySelector(".propiedades").textContent = j.propiedades.length;
+  });
+}
+
 
 // Helper para actualizar estado visual de una propiedad
 // Uso: window.actualizarEstadoPropiedad(1, { ownerColor: "#ff0000", houses: 2, hotel: false, ownerName: "Jugador 1" })
