@@ -29,7 +29,7 @@ export async function iniciarJuego(jugadores) {
 }
 
 function dibujarFichas(jugadores) {
-  console.log("Dibujando fichas para:", jugadores); 
+  console.log("Dibujando fichas para:", jugadores);
   const fichasSalida = document.getElementById("fichas-salida");
   fichasSalida.innerHTML = "";
   jugadores.forEach((jugador) => {
@@ -45,7 +45,7 @@ function dibujarFichas(jugadores) {
     ficha.style.fontSize = "2rem";
     ficha.style.marginRight = "5px";
     fichasSalida.appendChild(ficha);
-    console.log("Ficha agregada:", ficha); 
+    console.log("Ficha agregada:", ficha);
   });
 }
 function moverFicha(jugador) {
@@ -63,19 +63,53 @@ function inicializarListenersDados() {
   const dice2 = document.getElementById("dice2");
   const resultadoTexto = document.getElementById("resultado");
 
-  // Función auxiliar para enviar un jugador a la cárcel
   function enviarACarcel(jugador) {
-    const POSICION_CARCEL = 10;
+    const POSICION_CARCEL = 10; // id de cárcel en tu JSON
     jugador.posicion = POSICION_CARCEL;
     jugador.enCarcel = true;
     jugador.turnosEnCarcel = 0;
     moverFicha(jugador);
-    document.getElementById("resultado").textContent =
-      `${jugador.nombre} fue enviado a la cárcel 🚔`;
+    resultadoTexto.textContent = `${jugador.nombre} fue enviado a la cárcel 🚔`;
+  }
+
+  // Función para mostrar modal de compra de propiedad
+  function mostrarDetallesPropiedad(casilla, jugador) {
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3>${casilla.name}</h3>
+        <p>Precio: $${casilla.price}</p>
+        <p>Hipoteca: $${casilla.mortgage}</p>
+        <p>Rentas: ${casilla.rent ? casilla.rent.join(", ") : "-"}</p>
+        <button id="comprar-btn">Comprar</button>
+        <button id="cancelar-btn">Cancelar</button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Comprar
+    modal.querySelector("#comprar-btn").onclick = () => {
+      if (jugador.dinero >= casilla.price) {
+        jugador.dinero -= casilla.price;
+        casilla.owner = jugador.nombre;
+        alert(`${jugador.nombre} compró ${casilla.name} por $${casilla.price}`);
+      } else {
+        alert(`${jugador.nombre} no tiene suficiente dinero 💸`);
+      }
+      modal.remove();
+    };
+
+    // Cancelar
+    modal.querySelector("#cancelar-btn").onclick = () => {
+      modal.remove();
+    };
   }
 
   // -------------------------
-  // Tirada aleatoria
+  // Tirada ALEATORIA
   // -------------------------
   document.getElementById("btnLanzar").onclick = () => {
     dice1.classList.add("rolling");
@@ -94,7 +128,7 @@ function inicializarListenersDados() {
           jugador.enCarcel = false;
           jugador.turnosEnCarcel = 0;
           resultadoTexto.textContent =
-            `${jugador.nombre} sacó pares 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
+            `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
           game.moverJugadorActual(resultado.total);
           moverFicha(jugador);
         } else {
@@ -104,16 +138,16 @@ function inicializarListenersDados() {
             jugador.turnosEnCarcel = 0;
             jugador.dinero -= 50;
             resultadoTexto.textContent =
-              `${jugador.nombre} no sacó pares en 3 turnos. Paga $50 y sale de la cárcel.`;
+              `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
           } else {
             resultadoTexto.textContent =
-              `${jugador.nombre} no sacó pares. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+              `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
           }
           game.siguienteTurno();
           actualizarTurno();
           dice1.classList.remove("rolling");
           dice2.classList.remove("rolling");
-          return; // detenemos aquí
+          return;
         }
       } else {
         // Jugador normal
@@ -126,32 +160,50 @@ function inicializarListenersDados() {
         game.moverJugadorActual(resultado.total);
         moverFicha(jugador);
 
-        // Si cae en "Ve a la cárcel"
         const casilla = boardData.bottom
           .concat(boardData.left, boardData.top, boardData.right)
           .find(c => c.id === jugador.posicion);
 
+        // Ir a la cárcel
         if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
           enviarACarcel(jugador);
           game.siguienteTurno();
           actualizarTurno();
-          dice1.classList.remove("rolling");
-          dice2.classList.remove("rolling");
           return;
         }
 
-        // Chance
+        // Cartas
         if (casilla && casilla.type === "chance") {
           mostrarCarta("chance");
         }
-
-        // Comunidad
         if (casilla && casilla.type === "community_chest") {
           mostrarCarta("community_chest");
         }
 
+        // Propiedades disponibles
+        // Después de moverFicha(jugador) y calcular `casilla`:
+
+        if (casilla && ["property", "railroad", "utility"].includes(casilla.type)) {
+          if (!casilla.owner) {
+            // determinar si la tirada daba derecho a repetir turno
+            // para ALEATORIO: resultado.isDouble, para MANUAL: resultado.dado1===resultado.dado2
+            // Aquí asumimos que en este scope tienes `resultado` (ajusta el nombre si es distinto)
+            const shouldRepeat = (typeof resultado !== "undefined") ?
+              ((resultado.isDouble) ? (resultado.doublesCount < 3) : (resultado.dado1 && resultado.dado2 && resultado.dado1 === resultado.dado2))
+              : false;
+
+            // Abrimos modal de compra pasando al jugador y opciones
+            mostrarDetalles(casilla, jugador, { fromLanding: true, shouldRepeat });
+
+            // No sigas avanzando el turno aquí: la función mostrarDetalles se encargará
+            // de llamar a game.siguienteTurno() (o no) cuando el usuario cierre/compre
+            return;
+          }
+        }
+
+
         if (resultado.isDouble && resultado.doublesCount < 3) {
-          resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
+          resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
         } else {
           game.siguienteTurno();
         }
@@ -164,7 +216,7 @@ function inicializarListenersDados() {
   };
 
   // -------------------------
-  // Tirada manual
+  // Tirada MANUAL
   // -------------------------
   document.getElementById("btnManual").onclick = () => {
     const dado1 = parseInt(document.getElementById("inputDado1").value, 10);
@@ -177,7 +229,6 @@ function inicializarListenersDados() {
       try {
         const jugador = game.getJugadorActual();
 
-        // ⚖️ Si está en la cárcel
         if (jugador.enCarcel) {
           const resultado = game.tirarDadosManual(dado1, dado2);
           dice1.textContent = resultado.dado1;
@@ -187,7 +238,7 @@ function inicializarListenersDados() {
             jugador.enCarcel = false;
             jugador.turnosEnCarcel = 0;
             resultadoTexto.textContent =
-              `${jugador.nombre} sacó pares 🎉 y sale de la cárcel. Avanza ${resultado.suma} casillas.`;
+              `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.suma} casillas.`;
             game.moverJugadorActual(resultado.suma);
             moverFicha(jugador);
           } else {
@@ -197,10 +248,10 @@ function inicializarListenersDados() {
               jugador.turnosEnCarcel = 0;
               jugador.dinero -= 50;
               resultadoTexto.textContent =
-                `${jugador.nombre} no sacó pares en 3 turnos. Paga $50 y sale de la cárcel.`;
+                `${jugador.nombre} no sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
             } else {
               resultadoTexto.textContent =
-                `${jugador.nombre} no sacó pares. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+                `${jugador.nombre} no sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
             }
             game.siguienteTurno();
             actualizarTurno();
@@ -209,7 +260,6 @@ function inicializarListenersDados() {
             return;
           }
         } else {
-          // Jugador normal
           const resultado = game.tirarDadosManual(dado1, dado2);
           dice1.textContent = resultado.dado1;
           dice2.textContent = resultado.dado2;
@@ -219,7 +269,6 @@ function inicializarListenersDados() {
           game.moverJugadorActual(resultado.suma);
           moverFicha(jugador);
 
-          // Si cae en "Ve a la cárcel"
           const casilla = boardData.bottom
             .concat(boardData.left, boardData.top, boardData.right)
             .find(c => c.id === jugador.posicion);
@@ -228,23 +277,36 @@ function inicializarListenersDados() {
             enviarACarcel(jugador);
             game.siguienteTurno();
             actualizarTurno();
-            dice1.classList.remove("rolling");
-            dice2.classList.remove("rolling");
             return;
           }
 
-          // Chance
           if (casilla && casilla.type === "chance") {
             mostrarCarta("chance");
           }
-
-          // Comunidad
           if (casilla && casilla.type === "community_chest") {
             mostrarCarta("community_chest");
           }
 
+          // Después de moverFicha(jugador) y calcular `casilla`:
+
+          if (casilla && ["property", "railroad", "utility"].includes(casilla.type)) {
+            if (!casilla.owner) {
+              const shouldRepeat = (typeof resultado !== "undefined") ?
+                ((resultado.dado1 === resultado.dado2) ? (resultado.doublesCount < 3) : (resultado.dado1 && resultado.dado2 && resultado.dado1 === resultado.dado2))
+                : false;
+
+              // Abrimos modal de compra pasando al jugador y opciones
+              mostrarDetalles(casilla, jugador, { fromLanding: true, shouldRepeat });
+
+              // No sigas avanzando el turno aquí: la función mostrarDetalles se encargará
+              // de llamar a game.siguienteTurno() (o no) cuando el usuario cierre/compre
+              return;
+            }
+          }
+
+
           if (resultado.dado1 === resultado.dado2) {
-            resultadoTexto.textContent += " 🎉 ¡sacaste pares! repite turno";
+            resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
           } else {
             game.siguienteTurno();
           }
@@ -260,6 +322,7 @@ function inicializarListenersDados() {
     }, 500);
   };
 }
+
 
 
 function actualizarTurno() {
@@ -282,6 +345,15 @@ async function cargarCasillas() {
       //data = await respLocal.json();
     }
     boardData = data; // Guardar todo el JSON
+
+    const allLists = [data.bottom, data.left, data.top, data.right];
+    allLists.forEach(list => {
+      list.forEach(c => {
+        if (["property", "railroad", "utility"].includes(c.type)) {
+          if (typeof c.owner === "undefined") c.owner = null;
+        }
+      });
+    });
 
     const casillas = [...data.bottom, ...data.left, ...data.top, ...data.right];
     const tablero = document.getElementById("tablero");
@@ -359,76 +431,138 @@ async function cargarCasillas() {
   }
 }
 
-// Función para mostrar detalles
-function mostrarDetalles(c) {
+/**
+ * Mostrar modal de detalles de casilla.
+ * Si se pasa `jugador` (obj jugador) y la casilla es propiedad libre,
+ * se mostrará botón Comprar que descuenta el dinero y asigna owner.
+ *
+ * options: { fromLanding: boolean, shouldRepeat: boolean }
+ */
+function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shouldRepeat: false }) {
+  // crear modal (o reutilizar uno existente)
   let modal = document.getElementById("detalleModal");
-
+  // si no existe, crearlo (mantengo la estructura previa para compatibilidad)
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "detalleModal";
-
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3 id="modalNombre"></h3>
-        <div id="modalContenido"></div>
-        <button id="cerrarModal">Cerrar</button>
-      </div>
-    `;
+    modal.innerHTML = `<div class="modal-content"><h3 id="modalNombre"></h3><div id="modalContenido"></div><div id="modalActions" style="margin-top:12px;"></div></div>`;
     document.body.appendChild(modal);
 
     modal.addEventListener("click", (e) => {
-      if (e.target.id === "cerrarModal" || e.target.id === "detalleModal") {
+      // clic fuera del contenido o en un botón cerrar puede cerrar
+      if (e.target.id === "detalleModal") {
         modal.style.display = "none";
       }
     });
   }
 
-  // contenido dinámico según tipo
-  let contenido = "";
+  // preparar contenido dinámico
+  document.getElementById("modalNombre").textContent = c.name;
 
-  switch (c.type) {
-    case "property":
-      contenido = `
-        <p><b>Color:</b> ${c.color}</p>
-        <p><b>Precio:</b> $${c.price}</p>
-        <p><b>Hipoteca:</b> $${c.mortgage}</p>
-        <p><b>Renta base:</b> $${c.rent.base}</p>
-      `;
-      break;
-    case "railroad":
-      contenido = `
-        <p><b>Precio:</b> $${c.price}</p>
-        <p><b>Hipoteca:</b> $${c.mortgage}</p>
-        <p><b>Rentas:</b></p>
-        <ul style="text-align:left;">
-          <li>1 ferrocarril: $${c.rent["1"]}</li>
-          <li>2 ferrocarriles: $${c.rent["2"]}</li>
-          <li>3 ferrocarriles: $${c.rent["3"]}</li>
-          <li>4 ferrocarriles: $${c.rent["4"]}</li>
-        </ul>
-      `;
-      break;
-    case "tax":
-      contenido = `<p><b>Impuesto:</b> $${Math.abs(c.action.money)}</p>`;
-      break;
-    case "community_chest":
-      // mostrarCarta("community_chest");
-      return;
-    case "chance":
-      // mostrarCarta("chance");
-      return;
-    case "special":
-      contenido = `<p>Casilla especial.</p>`;
-      break;
-    default:
-      contenido = `<p>Sin detalles adicionales.</p>`;
+  let contenido = "";
+  if (c.type === "property" || c.type === "railroad" || c.type === "utility") {
+    contenido += `<p><b>Precio:</b> $${c.price ?? "—"}</p>`;
+    contenido += `<p><b>Hipoteca:</b> $${c.mortgage ?? "—"}</p>`;
+    if (c.rent) {
+      if (c.type === "railroad") {
+        contenido += `<p><b>Rentas:</b></p><ul>`;
+        contenido += `<li>1 ferrocarril: $${c.rent["1"]}</li>`;
+        contenido += `<li>2 ferrocarriles: $${c.rent["2"]}</li>`;
+        contenido += `<li>3 ferrocarriles: $${c.rent["3"]}</li>`;
+        contenido += `<li>4 ferrocarriles: $${c.rent["4"]}</li>`;
+        contenido += `</ul>`;
+      } else {
+        contenido += `<p><b>Renta base:</b> $${c.rent.base ?? "-"}</p>`;
+      }
+    }
+  } else {
+    // tipos no-propiedad (tax, special...)
+    contenido += `<p>Tipo: ${c.type}</p>`;
+    if (c.action && c.action.money) contenido += `<p><b>Acción:</b> ${c.action.money}</p>`;
   }
 
-  document.getElementById("modalNombre").textContent = c.name;
   document.getElementById("modalContenido").innerHTML = contenido;
 
+  // Actions (botones)
+  const actionsEl = document.getElementById("modalActions");
+  actionsEl.innerHTML = ""; // limpiar
+
+  // Si es propiedad y está disponible, mostrar botones (si hay jugador)
+  if (["property", "railroad", "utility"].includes(c.type) && !c.owner) {
+    // Comprar
+    const buyBtn = document.createElement("button");
+    buyBtn.textContent = "Comprar";
+    buyBtn.className = "btn";
+    // Si no hay jugador (apertura por click), deshabilitar compra
+    if (!jugador) buyBtn.disabled = true;
+
+    buyBtn.onclick = () => {
+      if (!jugador) return;
+      if ((jugador.dinero ?? jugador.money ?? 0) >= (c.price ?? 0)) {
+        // restar dinero (normalizo nombres)
+        if (typeof jugador.dinero === "number") jugador.dinero -= c.price;
+        else jugador.money -= c.price;
+
+        c.owner = jugador.nombre;
+
+        // actualizar marcador visual de propiedad
+        const estadoEl = document.getElementById(`estado-${c.id}`);
+        if (estadoEl) {
+          estadoEl.innerHTML = `
+    <span class="owner-token">${jugador.token}</span> 
+    <span class="owner-name">${jugador.nombre}</span>
+  `;
+          estadoEl.classList.remove("disponible");
+          estadoEl.classList.add("ocupado");
+        }
+
+
+        // mensaje y cerrar modal
+        document.getElementById("resultado").textContent = `${jugador.nombre} compró ${c.name} por $${c.price}`;
+      } else {
+        alert("No tienes suficiente dinero para comprar esta propiedad.");
+      }
+      modal.style.display = "none";
+
+      // si venimos de una tirada (fromLanding), avancemos el turno según shouldRepeat
+      if (options.fromLanding) {
+        if (!options.shouldRepeat) {
+          game.siguienteTurno();
+        }
+        actualizarTurno();
+      }
+    };
+
+    // Cancelar / Cerrar
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancelar";
+    cancelBtn.className = "btn";
+    cancelBtn.onclick = () => {
+      modal.style.display = "none";
+      // si venimos de una tirada (fromLanding), avanzamos el turno según shouldRepeat
+      if (options.fromLanding) {
+        if (!options.shouldRepeat) {
+          game.siguienteTurno();
+        }
+        actualizarTurno();
+      }
+    };
+
+    actionsEl.appendChild(buyBtn);
+    actionsEl.appendChild(cancelBtn);
+  } else {
+    // Si la casilla NO es una propiedad libre, mostrar solo botón cerrar
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "Cerrar";
+    closeBtn.className = "btn";
+    closeBtn.onclick = () => { modal.style.display = "none"; };
+    actionsEl.appendChild(closeBtn);
+  }
+
+  // mostrar modal
   modal.style.display = "flex";
 }
+
 
 function mostrarCarta(tipo) {
   const cartaCentro = document.getElementById("cartaCentro");
