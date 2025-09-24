@@ -49,6 +49,7 @@ function dibujarFichas(jugadores) {
     console.log("Ficha agregada:", ficha);
   });
 }
+
 function moverFicha(jugador) {
   const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
   const ficha = document.getElementById(`ficha-${nombreLimpio}`);
@@ -178,8 +179,16 @@ function inicializarListenersDados() {
         if (casilla && casilla.type === "chance") {
           mostrarCarta("chance", jugador);
         }
-        if (casilla && casilla.type === "community_chest") {
+        else if (casilla && casilla.type === "community_chest") {
           mostrarCarta("community_chest", jugador);
+        }
+        else if (["property", "railroad", "utility"].includes(casilla.type)) {
+          if (casilla.owner && casilla.owner !== jugador.nombre) {
+            cobrarRenta(jugador, casilla);
+          }
+        }
+        else if (casilla.type === "tax") {
+          aplicarImpuesto(jugador, casilla);
         }
 
         // Propiedades disponibles
@@ -187,9 +196,6 @@ function inicializarListenersDados() {
 
         if (casilla && ["property", "railroad", "utility"].includes(casilla.type)) {
           if (!casilla.owner) {
-            // determinar si la tirada daba derecho a repetir turno
-            // para ALEATORIO: resultado.isDouble, para MANUAL: resultado.dado1===resultado.dado2
-            // Aquí asumimos que en este scope tienes `resultado` (ajusta el nombre si es distinto)
             const shouldRepeat = (typeof resultado !== "undefined") ?
               ((resultado.isDouble) ? (resultado.doublesCount < 3) : (resultado.dado1 && resultado.dado2 && resultado.dado1 === resultado.dado2))
               : false;
@@ -202,7 +208,6 @@ function inicializarListenersDados() {
             return;
           }
         }
-
 
         if (resultado.isDouble && resultado.doublesCount < 3) {
           resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
@@ -285,9 +290,18 @@ function inicializarListenersDados() {
           if (casilla && casilla.type === "chance") {
             mostrarCarta("chance");
           }
-          if (casilla && casilla.type === "community_chest") {
+          else if (casilla && casilla.type === "community_chest") {
             mostrarCarta("community_chest");
           }
+          else if (casilla.type === "tax") {
+            aplicarImpuesto(jugador, casilla);
+          }
+          else if (["property", "railroad", "utility"].includes(casilla.type)) {
+            if (casilla.owner && casilla.owner !== jugador.nombre) {
+              cobrarRenta(jugador, casilla);
+            }
+          }
+
 
           // Después de moverFicha(jugador) y calcular `casilla`:
 
@@ -305,7 +319,6 @@ function inicializarListenersDados() {
               return;
             }
           }
-
 
           if (resultado.dado1 === resultado.dado2) {
             resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
@@ -330,7 +343,6 @@ function actualizarTurno() {
   const turnoDiv = document.getElementById("turno-actual");
   turnoDiv.textContent = `🎲 Turno de: ${jugador.nombre} ${jugador.token}`;
 }
-
 
 // --- CARGA DE CASILLAS ---
 async function cargarCasillas() {
@@ -593,7 +605,6 @@ function aplicarAccionCarta(carta, jugador) {
   actualizarPanelJugadores(game.jugadores);
 }
 
-
 function mostrarCarta(tipo, jugador) {
   const cartaCentro = document.getElementById("cartaCentro");
   const imgCarta = document.getElementById("imgCarta");
@@ -646,6 +657,50 @@ function actualizarPanelJugadores(jugadores) {
     div.querySelector(".propiedades").textContent = j.propiedades.length;
   });
 }
+
+function cobrarRenta(jugador, casilla) {
+  // verificar que haya dueño
+  if (!casilla.owner) return;
+
+  // buscar dueño en jugadores
+  const dueno = game.jugadores.find(j => j.nombre === casilla.owner);
+  if (!dueno || dueno === jugador) return; // no cobra renta a sí mismo
+
+  // calcular renta (básico: solo renta base)
+  let renta = 0;
+  if (typeof casilla.rent === "number") {
+    renta = casilla.rent;
+  } else if (casilla.rent && casilla.rent.base) {
+    renta = casilla.rent.base;
+  } else if (typeof casilla.price === "number") {
+    // fallback: renta básica como 10% del precio
+    renta = Math.floor(casilla.price * 0.1);
+  }
+
+  // transferir dinero
+  jugador.dinero -= renta;
+  dueno.dinero += renta;
+
+  // mostrar resultado
+  document.getElementById("resultado").textContent =
+    `${jugador.nombre} pagó $${renta} de renta a ${dueno.nombre}`;
+
+  actualizarPanelJugadores(game.jugadores);
+}
+
+function aplicarImpuesto(jugador, casilla) {
+  if (!casilla.action || !casilla.action.money) return;
+
+  const monto = casilla.action.money; // negativo
+  jugador.dinero += monto; // como es negativo, resta
+
+  document.getElementById("resultado").textContent =
+    `${jugador.nombre} pagó $${Math.abs(monto)} en ${casilla.name}`;
+
+  actualizarPanelJugadores(game.jugadores);
+}
+
+
 
 
 // Helper para actualizar estado visual de una propiedad
