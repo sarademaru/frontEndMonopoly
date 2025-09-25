@@ -599,3 +599,225 @@ body {
     max-height: 60vh;
   }
 }
+/* ========== PANEL DESPLEGABLE JUGADORES Y LOG ========== */
+.sidebar-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 280px;
+  height: 100vh;
+  background: #f8f9fa;
+  border-left: 2px solid #ccc;
+  overflow-y: auto;
+  padding: 15px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+
+  /* Estado cerrado por defecto */
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Cuando está abierto */
+.sidebar-panel.abierto {
+  transform: translateX(0);
+}
+
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.jugadores-section, .novedades-section {
+  flex: 1;
+}
+
+#cerrar-panel {
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+#lista-jugadores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-novedades {
+  max-height: 250px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* Items del log */
+.log-novedades p {
+  margin: 4px 0;
+  padding: 4px;
+  border-bottom: 1px dashed #ccc;
+}
+
+/* --- Responsivo: en móviles el panel ocupa toda la pantalla --- */
+@media (max-width: 768px) {
+  .sidebar-panel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-left: none;  
+    border-top: 2px solid #ccc;
+    transform: translateX(0); /* en móviles lo dejamos siempre visible */
+  }
+}
+
+/* ========== BOTÓN FLOTANTE SUPERIOR DERECHO ========== */
+.toggle-btn {
+  position: fixed;
+  top: 20px;       /* arriba */
+  right: 20px;     /* a la derecha */
+  z-index: 1101;   /* más alto que el panel */
+  padding: 8px 14px;
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: #0284c7;
+}
+
+/* Tarjeta de cada jugador */
+.jugador-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Encabezado con nombre, token y bandera */
+.jugador-panel h4 {
+  margin: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jugador-panel h4 img.jugador-bandera {
+  width: 24px;
+  height: 16px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  object-fit: cover;
+}
+
+/* Datos del jugador */
+.jugador-panel p {
+  margin: 0;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Resaltar el dinero */
+.jugador-panel .dinero {
+  font-weight: bold;
+  color: #16a34a; 
+}
+
+/* Si dinero bajo*/
+.jugador-panel .dinero.negativo {
+  color: #dc2626; 
+}
+
+#end-game-btn {
+  position: relative;
+  left: -40px; /* mueve el botón un poco a la izquierda */
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+#end-game-btn:hover {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  transform: scale(1.05); /* efecto de agrandar */
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.45);
+}
+
+#end-game-btn:active {
+  transform: scale(0.95); /* efecto de presionado */
+}
+
+/* ========== Panel siempre visible de jugadores ========== */
+/* Contenedor en grid */
+#mini-panels {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+}
+
+/* Cada mini tarjeta */
+.mini-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  padding: 10px 15px;
+  width: 140px;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.mini-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Encabezado con token + bandera + iniciales */
+.mini-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.mini-header strong {
+  font-size: 1rem;
+}
+
+/* Bandera pequeña */
+.mini-flag {
+  width: 24px;
+  height: 16px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+/* Cuerpo con info */
+.mini-body p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+}

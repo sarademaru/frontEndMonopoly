@@ -26,11 +26,20 @@ export default class Juego {
         this.turnoActual = (this.turnoActual + 1) % this.jugadores.length;
     }
 
-    moverJugadorActual(casillas) {
+    moverJugadorActual(pasos) {
         const jugador = this.getJugadorActual();
-        jugador.mover(casillas, this.totalCasillas);
-        // Aquí se puede agregar lógica para acciones tras caer en una casilla
+        let nuevaPosicion = jugador.posicion + pasos;
+
+        // Si pasa por la salida cobra $200
+        if (nuevaPosicion >= this.totalCasillas) {
+            nuevaPosicion = nuevaPosicion % this.totalCasillas;
+            jugador.dinero += 200;
+            console.log(`${jugador.nombre} pasó por la salida y recibe $200`);
     }
+
+    jugador.posicion = nuevaPosicion;
+}
+
 
     comprarPropiedadActual() {
         const jugador = this.getJugadorActual();

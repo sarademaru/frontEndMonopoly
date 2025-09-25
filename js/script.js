@@ -2,6 +2,7 @@
 import UI from "./UI.js";
 import Juego from "./game.js";
 import Jugador from "./player.js";
+import { agregarNovedad } from "./utilities.js";
 
 let boardData;
 let game;
@@ -16,6 +17,8 @@ document.getElementById("start-game").addEventListener("click", () => {
   document.getElementById("pre-menu-modal").style.display = "none";
 });
 
+import { inicializarPanel } from "./UI.js";
+
 export async function iniciarJuego(jugadores) {
   const propiedades = new Array(40).fill(null);
   game = new Juego(jugadores, propiedades);
@@ -24,10 +27,14 @@ export async function iniciarJuego(jugadores) {
   await cargarCasillas();
   dibujarFichas(jugadores);
   dibujarPanelJugadores(jugadores);
+
+  // 👇 inicializamos el panel
+  inicializarPanel();
+
   inicializarListenersDados();
   actualizarTurno();
-
 }
+
 
 function dibujarFichas(jugadores) {
   console.log("Dibujando fichas para:", jugadores);
@@ -37,9 +44,8 @@ function dibujarFichas(jugadores) {
     const ficha = document.createElement("span");
     ficha.className = "ficha";
 
-    // Al crear el jugador:
     const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
-    ficha.id = `ficha-${nombreLimpio}`; // <-- ID único
+    ficha.id = `ficha-${nombreLimpio}`;
 
     ficha.textContent = jugador.token || "🔴";
     ficha.title = jugador.nombre;
@@ -50,14 +56,17 @@ function dibujarFichas(jugadores) {
   });
 }
 
+// Funcion para mover la ficha del jugador en el tablero
 function moverFicha(jugador) {
   const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
   const ficha = document.getElementById(`ficha-${nombreLimpio}`);
+
   const nuevaCasilla = document.querySelector(`.casilla[data-id="${jugador.posicion}"]`);
   if (ficha && nuevaCasilla) {
     nuevaCasilla.appendChild(ficha);
   }
 }
+
 
 // ...para que los dados sirvan despues de dar "iniciar juego"...
 function inicializarListenersDados() {
@@ -74,43 +83,6 @@ function inicializarListenersDados() {
     resultadoTexto.textContent = `${jugador.nombre} fue enviado a la cárcel 🚔`;
   }
 
-  // Función para mostrar modal de compra de propiedad
-  function mostrarDetallesPropiedad(casilla, jugador) {
-    const modal = document.createElement("div");
-    modal.classList.add("modal");
-
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3>${casilla.name}</h3>
-        <p>Precio: $${casilla.price}</p>
-        <p>Hipoteca: $${casilla.mortgage}</p>
-        <p>Rentas: ${casilla.rent ? casilla.rent.join(", ") : "-"}</p>
-        <button id="comprar-btn">Comprar</button>
-        <button id="cancelar-btn">Cancelar</button>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Comprar
-    modal.querySelector("#comprar-btn").onclick = () => {
-      if (jugador.dinero >= casilla.price) {
-        jugador.dinero -= casilla.price;
-        casilla.owner = jugador.nombre;
-        jugador.propiedades.push(casilla);
-        alert(`${jugador.nombre} compró ${casilla.name} por $${casilla.price}`);
-      } else {
-        alert(`${jugador.nombre} no tiene suficiente dinero 💸`);
-      }
-      modal.remove();
-    };
-
-    // Cancelar
-    modal.querySelector("#cancelar-btn").onclick = () => {
-      modal.remove();
-    };
-  }
-
   // -------------------------
   // Tirada ALEATORIA
   // -------------------------
@@ -121,7 +93,6 @@ function inicializarListenersDados() {
     setTimeout(() => {
       const jugador = game.getJugadorActual();
 
-      // Si está en la cárcel
       if (jugador.enCarcel) {
         const resultado = game.rollDice();
         dice1.textContent = resultado.dice1;
@@ -134,6 +105,7 @@ function inicializarListenersDados() {
             `${jugador.nombre} sacó doble 🎉 y sale de la cárcel. Avanza ${resultado.total} casillas.`;
           game.moverJugadorActual(resultado.total);
           moverFicha(jugador);
+
         } else {
           jugador.turnosEnCarcel++;
           if (jugador.turnosEnCarcel >= 3) {
@@ -153,7 +125,6 @@ function inicializarListenersDados() {
           return;
         }
       } else {
-        // Jugador normal
         const resultado = game.rollDice();
         dice1.textContent = resultado.dice1;
         dice2.textContent = resultado.dice2;
@@ -167,7 +138,6 @@ function inicializarListenersDados() {
           .concat(boardData.left, boardData.top, boardData.right)
           .find(c => c.id === jugador.posicion);
 
-        // Ir a la cárcel
         if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
           enviarACarcel(jugador);
           game.siguienteTurno();
@@ -175,7 +145,6 @@ function inicializarListenersDados() {
           return;
         }
 
-        // Cartas
         if (casilla && casilla.type === "chance") {
           mostrarCarta("chance", jugador);
         }
@@ -191,20 +160,13 @@ function inicializarListenersDados() {
           aplicarImpuesto(jugador, casilla);
         }
 
-        // Propiedades disponibles
-        // Después de moverFicha(jugador) y calcular `casilla`:
-
         if (casilla && ["property", "railroad", "utility"].includes(casilla.type)) {
           if (!casilla.owner) {
             const shouldRepeat = (typeof resultado !== "undefined") ?
               ((resultado.isDouble) ? (resultado.doublesCount < 3) : (resultado.dado1 && resultado.dado2 && resultado.dado1 === resultado.dado2))
               : false;
 
-            // Abrimos modal de compra pasando al jugador y opciones
             mostrarDetalles(casilla, jugador, { fromLanding: true, shouldRepeat });
-
-            // No sigas avanzando el turno aquí: la función mostrarDetalles se encargará
-            // de llamar a game.siguienteTurno() (o no) cuando el usuario cierre/compre
             return;
           }
         }
@@ -302,20 +264,13 @@ function inicializarListenersDados() {
             }
           }
 
-
-          // Después de moverFicha(jugador) y calcular `casilla`:
-
           if (casilla && ["property", "railroad", "utility"].includes(casilla.type)) {
             if (!casilla.owner) {
               const shouldRepeat = (typeof resultado !== "undefined") ?
                 ((resultado.dado1 === resultado.dado2) ? (resultado.doublesCount < 3) : (resultado.dado1 && resultado.dado2 && resultado.dado1 === resultado.dado2))
                 : false;
 
-              // Abrimos modal de compra pasando al jugador y opciones
               mostrarDetalles(casilla, jugador, { fromLanding: true, shouldRepeat });
-
-              // No sigas avanzando el turno aquí: la función mostrarDetalles se encargará
-              // de llamar a game.siguienteTurno() (o no) cuando el usuario cierre/compre
               return;
             }
           }
@@ -380,13 +335,9 @@ async function cargarCasillas() {
         div.classList.add(c.type);
       }
 
-      // Abreviación
       const abrev = (c.name || "").slice(0, 3).toUpperCase();
-
-      // Construcción del contenido con innerHTML
       let contenido = "";
 
-      // Estado encima de la casilla (solo propiedades)
       if (c.type === "property") {
         contenido += `<div class="estado" id="estado-${c.id}">Disponible</div>`;
       }
@@ -400,19 +351,16 @@ async function cargarCasillas() {
         <span class="abreviacion">${abrev}</span>
       `;
 
-      // Contenedor de edificaciones (casas/hotel) solo para propiedades
       if (c.type === "property") {
         contenido += `<div class="edificaciones" id="edif-${c.id}"></div>`;
       }
 
-      // Si es la casilla de salida (id 0), agrega el contenedor de fichas
       if (c.id === 0) {
         contenido += `<div id="fichas-salida"></div>`;
       }
 
       div.innerHTML = contenido;
 
-      // Posicionamiento
       if (i < 11) {
         div.style.gridRow = 1;
         div.style.gridColumn = i + 1;
@@ -427,7 +375,6 @@ async function cargarCasillas() {
         div.style.gridRow = 41 - i;
       }
 
-      // Click para abrir detalles
       div.addEventListener("click", () => {
         mostrarDetalles(c);
       });
@@ -516,6 +463,7 @@ function mostrarDetalles(c, jugador = null, options = { fromLanding: false, shou
       if (jugador && jugador.comprarPropiedad(c)) {
         c.owner = jugador.nombre;
         actualizarPanelJugadores(game.jugadores);
+        actualizarMiniPaneles(game.jugadores);
 
         // actualizar en tablero
         const estadoEl = document.getElementById(`estado-${c.id}`);
@@ -601,8 +549,9 @@ function aplicarAccionCarta(carta, jugador) {
       `${jugador.nombre} se mueve a la casilla ${carta.action.moveTo}`;
   }
 
-  // 👇 actualizar panel de jugadores en pantalla
+  //  actualizar panel de jugadores en pantalla
   actualizarPanelJugadores(game.jugadores);
+  actualizarMiniPaneles(game.jugadores);
 }
 
 function mostrarCarta(tipo, jugador) {
@@ -630,7 +579,7 @@ function mostrarCarta(tipo, jugador) {
 }
 
 function dibujarPanelJugadores(jugadores) {
-  const panel = document.getElementById("panel-jugadores");
+  const panel = document.getElementById("lista-jugadores");
   panel.innerHTML = ""; // limpiar
 
   jugadores.forEach(j => {
@@ -638,11 +587,23 @@ function dibujarPanelJugadores(jugadores) {
     div.classList.add("jugador-panel");
     div.id = `panel-${j.nombre}`;
 
+    // URL de bandera con flagsapi
+    let flagUrl = "";
+    if (j.country) {
+      flagUrl = `https://flagsapi.com/${j.country.toUpperCase()}/flat/32.png`;
+    }
+
     div.innerHTML = `
-      <h4>${j.token} ${j.nombre}</h4>
-      <p>Dinero: <span class="dinero">$${j.dinero}</span></p>
-      <p>Propiedades: <span class="propiedades">${j.propiedades.length}</span></p>
-    `;
+    <h4>
+      ${j.token} 
+      ${j.nombre.split(" ").map(p => p[0]).join("").toUpperCase()} 
+      ${flagUrl ? `<img src="${flagUrl}" alt="Bandera" class="jugador-bandera">` : ""}
+    </h4>
+    <p>💰 Dinero: <span class="dinero">$${j.dinero}</span></p>
+    <p>🏠 Propiedades: <span class="propiedades">${j.propiedades.length}</span></p>
+    <p>📉 Hipotecas: <span class="hipotecas">0</span></p>
+`;
+
 
     panel.appendChild(div);
   });
@@ -653,8 +614,29 @@ function actualizarPanelJugadores(jugadores) {
     const div = document.getElementById(`panel-${j.nombre}`);
     if (!div) return;
 
-    div.querySelector(".dinero").textContent = `$${j.dinero}`;
+    // Dinero
+    const dineroEl = div.querySelector(".dinero");
+    dineroEl.textContent = `$${j.dinero}`;
+    dineroEl.classList.toggle("negativo", j.dinero < 0); // se pone rojo si está en negativo
+
+    // Propiedades
     div.querySelector(".propiedades").textContent = j.propiedades.length;
+
+    // Hipotecas
+    if (div.querySelector(".hipotecas")) {
+      div.querySelector(".hipotecas").textContent = j.hipotecas?.length || 0;
+    }
+  });
+}
+
+function actualizarMiniPaneles(jugadores) {
+  jugadores.forEach((j) => {
+    const div = document.getElementById(`mini-${j.nombre.replace(/\s+/g, "_")}`);
+    if (!div) return;
+
+    div.querySelector(".dinero").textContent = `$${j.money}`;
+    div.querySelector(".propiedades").textContent = j.propiedades?.length || 0;
+    div.querySelector(".hipotecas").textContent = j.hipotecas?.length || 0;
   });
 }
 
@@ -679,13 +661,16 @@ function cobrarRenta(jugador, casilla) {
 
   // transferir dinero
   jugador.dinero -= renta;
+  agregarNovedad(`${jugador.nombre} pagó $${renta} de alquiler 💸`);
   dueno.dinero += renta;
+  agregarNovedad(`${dueno.nombre} recibió $${renta} de alquiler 💰`);
 
   // mostrar resultado
   document.getElementById("resultado").textContent =
     `${jugador.nombre} pagó $${renta} de renta a ${dueno.nombre}`;
 
   actualizarPanelJugadores(game.jugadores);
+  actualizarMiniPaneles(game.jugadores);
 }
 
 function aplicarImpuesto(jugador, casilla) {
@@ -698,10 +683,8 @@ function aplicarImpuesto(jugador, casilla) {
     `${jugador.nombre} pagó $${Math.abs(monto)} en ${casilla.name}`;
 
   actualizarPanelJugadores(game.jugadores);
+  actualizarMiniPaneles(game.jugadores);
 }
-
-
-
 
 // Helper para actualizar estado visual de una propiedad
 // Uso: window.actualizarEstadoPropiedad(1, { ownerColor: "#ff0000", houses: 2, hotel: false, ownerName: "Jugador 1" })
@@ -736,4 +719,56 @@ window.actualizarEstadoPropiedad = function (id, { ownerColor = null, houses = 0
     }
   }
 };
+
+document.getElementById("btn-terminar").addEventListener("click", () => {
+  terminarJuego();
+});
+
+function terminarJuego() {
+  // Ordenamos por dinero + valor de propiedades
+  const ranking = game.jugadores.map(j => {
+    const patrimonio = j.dinero + (j.propiedades.length * 200); // puedes usar valor real de cada propiedad
+    return { nombre: j.nombre, pais: j.country, patrimonio };
+  }).sort((a, b) => b.patrimonio - a.patrimonio);
+
+  // Mostrar en novedades
+  agregarNovedad("🏁 El juego ha terminado. Ranking final:");
+  ranking.forEach((j, i) => {
+    agregarNovedad(`#${i + 1} ${j.nombre} (${j.pais}) - Patrimonio: $${j.patrimonio}`);
+  });
+
+  // Opcional: deshabilitar botones de dados
+  document.getElementById("btnLanzar").disabled = true;
+  document.getElementById("btnManual").disabled = true;
+  mostrarResultadosFinales(ranking);
+
+}
+
+function mostrarResultadosFinales(ranking) {
+  const modal = document.getElementById("modal-resultados");
+  const lista = document.getElementById("ranking-final");
+  lista.innerHTML = "";
+
+  ranking.forEach((j, i) => {
+    lista.innerHTML += `
+      <div class="jugador-ranking">
+        <span>#${i + 1} ${j.nombre}</span>
+        <img src="https://flagsapi.com/${j.pais.toUpperCase()}/flat/32.png" alt="Bandera">
+        <span>💰 $${j.patrimonio}</span>
+      </div>
+    `;
+  });
+
+  modal.classList.remove("oculto");
+
+}
+//Cerrar modal resultados
+document.getElementById("modal-resultados").addEventListener("click", (e) => {
+  const modalContent = document.querySelector(".modal-contenido");
+  if (!modalContent.contains(e.target)) {
+    document.getElementById("modal-resultados").classList.add("oculto");
+  }
+});
+
+
 

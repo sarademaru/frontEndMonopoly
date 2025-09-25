@@ -108,3 +108,30 @@ export default class UI {
     if (manualBtn) manualBtn.addEventListener("click", () => this.handleManualRoll());
   }
 }
+
+// --- Abrir / Cerrar panel lateral ---
+export function inicializarPanel() {
+  const toggleBtn = document.getElementById("toggle-panel");
+  const panel = document.getElementById("sidebar-panel");
+  const cerrarBtn = document.getElementById("cerrar-panel"); // 👈 nuevo botón dentro del panel
+
+  if (toggleBtn && panel) {
+    // empieza cerrado
+    panel.classList.remove("abierto");
+
+    // Abrir panel
+    toggleBtn.addEventListener("click", () => {
+      panel.classList.toggle("abierto");
+      toggleBtn.style.display = "none"; // ocultar botón cuando se abre
+    });
+  }
+
+  if (cerrarBtn) {
+    cerrarBtn.addEventListener("click", () => {
+      panel.classList.remove("abierto");
+      toggleBtn.style.display = "block"; // volver a mostrar botón
+    });
+  }
+}
+
+
