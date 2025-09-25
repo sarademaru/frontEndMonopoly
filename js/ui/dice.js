@@ -8,7 +8,7 @@ import { actualizarTurno } from "./turno.js";
 
 
 // ...para que los dados sirvan despues de dar "iniciar juego"...
-export function inicializarListenersDados({game,
+export function inicializarListenersDados({ game,
   boardData,
   aplicarImpuesto,
   cobrarRenta,
@@ -97,7 +97,7 @@ export function inicializarListenersDados({game,
           mostrarCarta("community_chest", jugador);
         }
         else if (["property", "railroad", "utility"].includes(casilla.type)) {
-          if (casilla.owner && casilla.owner !== jugador.nombre) {
+          if (casilla.owner && casilla.owner !== jugador.nombre && !casilla.hipotecada) {
             cobrarRenta(jugador, casilla);
           }
         }
@@ -208,7 +208,7 @@ export function inicializarListenersDados({game,
             aplicarImpuesto(jugador, casilla);
           }
           else if (["property", "railroad", "utility"].includes(casilla.type)) {
-            if (casilla.owner && casilla.owner !== jugador.nombre) {
+            if (casilla.owner && casilla.owner !== jugador.nombre && !casilla.hipotecada) {
               cobrarRenta(jugador, casilla);
             }
           }

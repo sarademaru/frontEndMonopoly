@@ -28,6 +28,7 @@ export function aplicarImpuesto(jugador, casilla) {
 }
 
 export function cobrarRenta(jugador, casilla) {
+  if (casilla.hipotecada) return; // si esat hipoteacda no cobre
   // verificar que haya dueño
   if (!casilla.owner) return;
 
@@ -99,7 +100,7 @@ export function mostrarCarta(tipo, jugador) {
  *
  * options: { fromLanding: boolean, shouldRepeat: boolean }
  */
-export function mostrarDetalles(c, jugador = null, game, options = { fromLanding: false, shouldRepeat: false}) {
+export function mostrarDetalles(c, jugador = null, game, options = { fromLanding: false, shouldRepeat: false }) {
   let modal = document.getElementById("detalleModal");
 
   if (!modal) {
@@ -127,7 +128,7 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
   if (["property", "railroad", "utility"].includes(c.type)) {
     contenido += `<p><b>Precio:</b> $${c.price ?? "—"}</p>`;
     contenido += `<p><b>Hipoteca:</b> $${c.mortgage ?? "—"}</p>`;
-    
+
     // Mostrar información de casas y hoteles si es una propiedad
     if (c.type === "property") {
       contenido += `<p><b>Casas:</b> ${c.houses || 0}</p>`;
@@ -135,7 +136,7 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       contenido += `<p><b>Precio Casa:</b> $100</p>`;
       contenido += `<p><b>Precio Hotel:</b> $250</p>`;
     }
-    
+
     if (c.rent) {
       if (c.type === "railroad") {
         contenido += `<p><b>Rentas:</b></p><ul>`;
@@ -244,7 +245,7 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
   }
   // Si es una propiedad que posee el jugador actual
   else if (c.type === "property" && jugador && c.owner === jugador.nombre) {
-    
+
     // Función auxiliar para verificar si el jugador posee todas las propiedades del mismo color
     const poseeGrupoCompleto = (jugador, propiedad, game) => {
       const data = window.boardData;
@@ -269,9 +270,9 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       const buyHouseBtn = document.createElement("button");
       buyHouseBtn.textContent = "Comprar Casa ($100)";
       buyHouseBtn.className = "btn";
-      
+
       const gameRef = game || window.game;
-      
+
       // Verificar condiciones: poseer grupo completo y tener dinero
       if (!poseeGrupoCompleto(jugador, c, gameRef)) {
         buyHouseBtn.disabled = true;
@@ -280,30 +281,30 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         buyHouseBtn.disabled = true;
         buyHouseBtn.title = "No tienes suficiente dinero";
       }
-      
+
       buyHouseBtn.onclick = () => {
         if (jugador.dinero >= 100) {
           jugador.dinero -= 100;
           c.houses = (c.houses || 0) + 1;
-          
+
           // Actualizar la UI
           if (gameRef) {
             actualizarPanelJugadores(gameRef.jugadores);
             actualizarMiniPaneles(gameRef.jugadores);
           }
-          
+
           // Actualizar casas en el tablero
           actualizarCasasEnTablero(c);
-          
+
           document.getElementById("resultado").textContent =
             `${jugador.nombre} compró una casa en ${c.name}`;
-          
+
           // Cerrar modal y refrescar
           modal.style.display = "none";
           mostrarDetalles(c, jugador, gameRef, options);
         }
       };
-      
+
       actionsEl.appendChild(buyHouseBtn);
     }
 
@@ -312,41 +313,84 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       const buyHotelBtn = document.createElement("button");
       buyHotelBtn.textContent = "Comprar Hotel ($250)";
       buyHotelBtn.className = "btn";
-      
+
       const gameRef = game || window.game;
-      
+
       // Verificar condiciones: tener 4 casas y tener dinero
       if (jugador.dinero < 250) {
         buyHotelBtn.disabled = true;
         buyHotelBtn.title = "No tienes suficiente dinero";
       }
-      
+
       buyHotelBtn.onclick = () => {
         if (jugador.dinero >= 250) {
           jugador.dinero -= 250;
           c.hotel = true;
           c.houses = 0; // El hotel reemplaza las 4 casas
-          
+
           // Actualizar la UI
           if (gameRef) {
             actualizarPanelJugadores(gameRef.jugadores);
             actualizarMiniPaneles(gameRef.jugadores);
           }
-          
+
           // Actualizar hotel en el tablero
           actualizarCasasEnTablero(c);
-          
+
           document.getElementById("resultado").textContent =
             `${jugador.nombre} compró un hotel en ${c.name}`;
-          
+
           // Cerrar modal y refrescar
           modal.style.display = "none";
           mostrarDetalles(c, jugador, gameRef, options);
         }
       };
-      
+
       actionsEl.appendChild(buyHotelBtn);
     }
+
+    // Botón para hipotecar
+    if (jugador && c.owner === jugador.nombre) {
+      if (!c.hipotecada) {
+        const hipBtn = document.createElement("button");
+        hipBtn.textContent = "Hipotecar";
+        hipBtn.onclick = () => {
+          if (jugador.hipotecarPropiedad(c)) {
+            alert(`${jugador.nombre} hipotecó ${c.name} y recibe $${c.mortgage}`);
+            actualizarPanelJugadores(game.jugadores);
+
+            // actualizar en tablero
+            const estadoEl = document.getElementById(`estado-${c.id}`);
+            if (estadoEl) {
+              estadoEl.textContent = "Hipotecada";
+              estadoEl.classList.remove("disponible", "ocupado");
+              estadoEl.classList.add("hipotecada");
+            }
+          }
+        };
+        actionsEl.appendChild(hipBtn);
+      } else {
+        const deshipBtn = document.createElement("button");
+        deshipBtn.textContent = "Levantar Hipoteca";
+        deshipBtn.onclick = () => {
+          if (jugador.deshipotecarPropiedad(c)) {
+            alert(`${jugador.nombre} levantó hipoteca de ${c.name}`);
+            actualizarPanelJugadores(game.jugadores);
+
+            const estadoEl = document.getElementById(`estado-${c.id}`);
+            if (estadoEl) {
+              estadoEl.textContent = `${jugador.nombre}`;
+              estadoEl.classList.remove("hipotecada", "disponible");
+              estadoEl.classList.add("ocupado");
+            }
+          }else {
+            alert("No tienes dinero suficiente para levantar la hipoteca.");
+          }
+        };
+        actionsEl.appendChild(deshipBtn);
+      }
+    }
+
 
     // Botón cerrar
     const closeBtn = document.createElement("button");
@@ -370,11 +414,11 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
 function actualizarCasasEnTablero(propiedad) {
   const casillaDiv = document.querySelector(`.casilla[data-id="${propiedad.id}"]`);
   if (!casillaDiv) return;
-  
+
   // Remover indicadores existentes de casas/hoteles
   const existingIndicators = casillaDiv.querySelectorAll('.houses-indicator, .hotel-indicator');
   existingIndicators.forEach(indicator => indicator.remove());
-  
+
   if (propiedad.hotel) {
     // Mostrar hotel
     const hotelIndicator = document.createElement('div');
