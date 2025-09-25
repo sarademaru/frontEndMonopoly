@@ -1,5 +1,3 @@
-import Game from "./game.js";
-
 // js/UI.js
 export default class UI {
   constructor(game) {
@@ -113,7 +111,7 @@ export default class UI {
 export function inicializarPanel() {
   const toggleBtn = document.getElementById("toggle-panel");
   const panel = document.getElementById("sidebar-panel");
-  const cerrarBtn = document.getElementById("cerrar-panel"); // 👈 nuevo botón dentro del panel
+  const cerrarBtn = document.getElementById("cerrar-panel"); // 
 
   if (toggleBtn && panel) {
     // empieza cerrado
@@ -133,5 +131,3 @@ export function inicializarPanel() {
     });
   }
 }
-
-

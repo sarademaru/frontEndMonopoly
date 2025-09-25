@@ -92,7 +92,7 @@ document.getElementById("start-game").addEventListener("click", async () => {
 
     const jugador = new Jugador(name);
     jugador.country = country; // se guarda el código del país 
-    jugador.money = 1500;
+    jugador.dinero = 1500;
     jugador.token = tokenColors[i - 1];
     jugador.posicion = 0;
 
@@ -130,7 +130,7 @@ function dibujarMiniPaneles(jugadores) {
         <strong>${iniciales}</strong>
       </div>
       <div class="mini-body">
-        <p>💰 <span class="dinero">$${j.money}</span></p>
+        <p>💰 <span class="dinero">$${j.dinero}</span></p>
         <p>🏠 Propiedades: <span class="propiedades">${j.propiedades?.length || 0}</span></p>
         <p>📑 Hipotecas: <span class="hipotecas">${j.hipotecas?.length || 0}</span></p>
       </div>
@@ -140,9 +140,5 @@ function dibujarMiniPaneles(jugadores) {
   });
 }
 
-
-
-
-
-
-
+// Exponer para que otros módulos puedan actualizar los mini paneles
+window.dibujarMiniPaneles = dibujarMiniPaneles;

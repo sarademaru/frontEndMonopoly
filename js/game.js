@@ -1,5 +1,5 @@
 // ============================
-// Clase Juego
+// Clase Juego 
 // ============================
 export default class Juego {
     constructor(jugadores, propiedades, totalCasillas = 40) {
@@ -39,8 +39,6 @@ export default class Juego {
 
     jugador.posicion = nuevaPosicion;
 }
-
-
     comprarPropiedadActual() {
         const jugador = this.getJugadorActual();
         const propiedad = this.propiedades[jugador.posicion];
@@ -79,7 +77,6 @@ export default class Juego {
             throw new Error("Los valores de los dados deben estar entre 1 y 6.");
         }
     }
-
     /**
      * Lanza los dados con control de dobles
      */

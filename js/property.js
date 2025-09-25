@@ -1,6 +1,6 @@
 // Clase Propiedad
-import { agregarNovedad } from "./utilities.js";
-class Propiedad {
+// Nota: no se requiere importar nada aquí
+export default class Propiedad {
     constructor(nombre, precio, alquiler) {
         this.nombre = nombre;
         this.precio = precio;
@@ -8,3 +8,4 @@ class Propiedad {
         this.dueno = null;
     }
 }
+// Si necesitas utilidades relacionadas con propiedades, impórtalas donde se usen.
