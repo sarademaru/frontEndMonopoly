@@ -48,7 +48,7 @@ export async function cargarCasillas() {
       const abrev = (c.name || "").slice(0, 3).toUpperCase();
       let contenido = "";
 
-      if (c.type === "property") {
+      if (c.type === "property" || c.type === "railroad") {
         contenido += `<div class="estado" id="estado-${c.id}">Disponible</div>`;
       }
       if (c.type === "property" && c.color) {

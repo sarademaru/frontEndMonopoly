@@ -87,6 +87,19 @@ function aplicarAccionCarta(carta, jugador) {
 // Exponer para que gameUtils.js pueda invocarla tras mostrarCarta
 window.aplicarAccionCarta = aplicarAccionCarta;
 
+// Exponer un abridor de detalles para clicks en casillas fuera del flujo de turno
+// Abre el mismo modal pero sin jugador (compra deshabilitada) y con referencia al game actual
+window.mostrarDetalles = (casilla) => {
+  try {
+    const gameRef = window.game || game;
+    // jugador = null para que el botón Comprar quede deshabilitado
+    // fromLanding = false para no afectar el turno
+    mostrarDetalles(casilla, null, gameRef, { fromLanding: false, shouldRepeat: false });
+  } catch (e) {
+    console.warn("No se pudo abrir detalles de casilla:", e);
+  }
+};
+
 function dibujarPanelJugadores(jugadores) {
   const panel = document.getElementById("lista-jugadores");
   panel.innerHTML = ""; // limpiar
