@@ -41,7 +41,33 @@ export function cobrarRenta(jugador, casilla) {
   let renta = 0;
   let rentaDetalle = "";
 
-  if (casilla.type === "property") {
+  // === RAILROAD (manejo especial) ===
+  if (casilla.type === "railroad") {
+    // reunir todas las casillas del tablero desde boardData (que viene de board.json)
+    const data = window.boardData;
+    const todosFerros = []
+      .concat(data.bottom || [])
+      .concat(data.left || [])
+      .concat(data.top || [])
+      .concat(data.right || [])
+      .filter(c => c && c.type === "railroad");
+
+    // contar cuántos ferrocarriles posee el dueño
+    const ferrocarrilesDueno = todosFerros.filter(f => f.owner === dueno.nombre);
+    const cantidad = ferrocarrilesDueno.length || 1;
+
+    // usar la tabla de rentas del JSON
+    if (casilla.rent && casilla.rent[String(cantidad)]) {
+      renta = Number(casilla.rent[String(cantidad)]);
+      rentaDetalle = ` (${cantidad} ferrocarril${cantidad > 1 ? "es" : ""})`;
+    } else {
+      renta = Number(casilla.rent?.["1"] ?? 25);
+      rentaDetalle = " (1 ferrocarril)";
+    }
+  }
+
+  // === PROPIEDADES NORMALES ===
+  else if (casilla.type === "property") {
     const houses = casilla.houses || 0;
     const hotel = !!casilla.hotel;
     const r = casilla.rent || {};
@@ -84,7 +110,7 @@ export function cobrarRenta(jugador, casilla) {
       renta = Math.floor(casilla.price * 0.1);
     }
   } else {
-    // fallback para otros tipos (deja tu lógica actual)
+    // fallback para otros tipos
     if (typeof casilla.rent === "number") {
       renta = casilla.rent;
     } else if (casilla.rent && casilla.rent.base) {
@@ -95,16 +121,12 @@ export function cobrarRenta(jugador, casilla) {
   }
 
   console.log("DEBUG cobrarRenta", {
-    name: casilla.name,
-    houses: casilla.houses,
-    hotel: casilla.hotel,
-    rentBase: casilla.rent?.base,
-    withHouse: casilla.rent?.withHouse,
-    with_houses: casilla.rent?.with_houses,
-    withHotel: casilla.rent?.withHotel,
-    with_hotel: casilla.rent?.with_hotel,
-    chosen: renta
+    casilla: casilla.name,
+    type: casilla.type,
+    chosenRenta: renta,
+    rentaDetalle
   });
+
   // transferir dinero
   jugador.dinero -= renta;
   agregarNovedad(`${jugador.nombre} pagó $${renta} de renta${rentaDetalle} por ${casilla.name} 💸`);
