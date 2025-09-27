@@ -273,9 +273,9 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         const estadoEl = document.getElementById(`estado-${c.id}`);
         if (estadoEl) {
           // Solo cambiamos el texto de estado
-          estadoEl.textContent = "Ocupado";
+          estadoEl.textContent = `${jugador.token}`;
           estadoEl.classList.remove("disponible");
-          estadoEl.classList.add("ocupado");
+          estadoEl.classList.add(`${jugador.token}`);
 
           // Agregar dueño en un contenedor aparte
           let ownerInfo = document.getElementById(`owner-${c.id}`);
@@ -343,8 +343,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       return propiedadesMismoColor.every(prop => prop.owner === jugador.nombre);
     };
 
-    // Botón para comprar casa
-    if (!c.hotel && (c.houses || 0) < 4) {
+    // Botón para comprar casa (solo si no está hipotecada)
+    if (!c.hipotecada && !c.hotel && (c.houses || 0) < 4) {
       const buyHouseBtn = document.createElement("button");
       buyHouseBtn.textContent = "Comprar Casa ($100)";
       buyHouseBtn.className = "btn btn-exito";
@@ -386,8 +386,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       actionsEl.appendChild(buyHouseBtn);
     }
 
-    // Botón para comprar hotel
-    if (!c.hotel && (c.houses || 0) === 4) {
+    // Botón para comprar hotel (solo si no está hipotecada)
+    if (!c.hipotecada && !c.hotel && (c.houses || 0) === 4) {
       const buyHotelBtn = document.createElement("button");
       buyHotelBtn.textContent = "Comprar Hotel ($250)";
       buyHotelBtn.className = "btn btn-secundario";
