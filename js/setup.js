@@ -24,7 +24,7 @@ function generatePlayerInputs(count) {
     playerDiv.innerHTML = `
       <h3>Jugador ${i} ${tokenColors[i - 1]}</h3>
       <label for="player${i}-name">Nombre:</label>
-      <input type="text" id="player${i}-name" value="Jugador ${i}" required>
+      <input type="text" id="player${i}-name"placeholder="Jugador ${i}" required>
       
       <label for="player${i}-country">País:</label>
       <select id="player${i}-country" required>
@@ -35,7 +35,34 @@ function generatePlayerInputs(count) {
     playersSetup.appendChild(playerDiv);
   }
 
-  loadCountries();
+ loadCountries().then(() => activarValidacion());
+
+}
+
+// ------------------
+// Validar que todos los campos estén completos
+// ------------------
+function activarValidacion() {
+  const boton = document.getElementById("start-game");
+  const inputs = document.querySelectorAll("#players-setup input[required], #players-setup select[required]");
+
+  function validarCampos() {
+    let completos = true;
+    inputs.forEach(input => {
+      if (input.value.trim() === "") {
+        completos = false;
+      }
+    });
+    boton.disabled = !completos;
+  }
+
+  // Revisar cuando el usuario escriba o cambie selección
+  inputs.forEach(input => {
+    input.addEventListener("input", validarCampos);
+    input.addEventListener("change", validarCampos);
+  });
+
+  validarCampos(); // primera validación al cargar
 }
 
 // ------------------

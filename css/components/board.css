@@ -277,6 +277,38 @@
 }
 
 /* ========== RESPONSIVE PARA TABLERO ========== */
+/* ESCRITORIO GRANDE (1200px+) */
+@media (min-width: 1200px) {
+    #tablero {
+        width: 90vmin; /* tablero un poco más compacto que toda la pantalla */
+        border-width: 6px;
+    }
+
+    .casilla {
+        padding: 12px;
+        font-size: 1.1rem; /* textos más grandes */
+    }
+
+    .cartas {
+        flex-direction: row; /* horizontal, porque hay espacio */
+        gap: var(--spacing-lg);
+        justify-content: center;
+    }
+
+    .cartas img {
+        max-width: 220px;
+        height: auto;
+        margin: 8px;
+    }
+
+    .logo-monopoly {
+        max-width: 60%; /* controlamos que no se deforme */
+    }
+
+    .centro {
+        padding: var(--spacing-xl);
+    }
+}
 
 /* MÓVIL GRANDE Y TABLET VERTICAL (hasta 767px) */
 @media (max-width: 767px) {
