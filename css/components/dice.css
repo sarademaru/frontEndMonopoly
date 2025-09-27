@@ -437,39 +437,8 @@
     }
 }
 
-/* ========== DARK MODE ========== */
-@media (prefers-color-scheme: dark) {
-    .dice-container {
-        background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
-        border-color: rgba(255, 255, 255, 0.2);
-    }
     
-    #dice-container {
-        background: rgba(0, 0, 0, 0.2);
-    }
-    
-    .dice {
-        background: rgba(0, 0, 0, 0.1);
-    }
-    
-    .manual-inputs {
-        background: rgba(0, 0, 0, 0.2);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .manual-inputs input {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-        color: var(--text-white);
-    }
-    
-    #resultado {
-        background: rgba(255, 215, 0, 0.15);
-        border-color: rgba(255, 215, 0, 0.4);
-        color: var(--text-white);
-    }
-}
-
+   
 /* ========== ANIMACIONES ADICIONALES ========== */
 @keyframes diceShake {
     0%, 100% { transform: translateX(0); }
@@ -567,5 +536,19 @@
     100% {
         opacity: 0;
         transform: scale(1.5) translateY(-10px);
+    }
+}
+/* ========== REDUCIR MOVIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    .die.rolling {
+        animation: none;
+    }
+    
+    .die {
+        transition: none;
+    }
+    
+    .dice-container button {
+        transition: none;
     }
 }
