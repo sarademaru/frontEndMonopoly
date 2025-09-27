@@ -669,7 +669,7 @@ body {
   border-bottom: 1px dashed #ccc;
 }
 
-/* --- Responsivo: en móviles el panel ocupa toda la pantalla --- */
+/* --- Responsivo: en pantallas pequeñas el panel ocupa toda la pantalla --- */
 @media (max-width: 768px) {
   .sidebar-panel {
     position: relative;
@@ -677,7 +677,7 @@ body {
     height: auto;
     border-left: none;  
     border-top: 2px solid #ccc;
-    transform: translateX(0); /* en móviles lo dejamos siempre visible */
+    transform: translateX(0); /* asi que en pantallas pequeñas lo dejamos siempre visible  */
   }
 }
 
@@ -827,3 +827,26 @@ body {
   margin: 2px 0;
   font-size: 0.85rem;
 }
+
+/* Botón Terminar Juego */
+.btn-terminar-flotante {
+  position: fixed;
+  top: 20px;
+  left: 20px; /* a la izquierda */
+  background: linear-gradient(135deg, #ff4b5c, #ff1e3c);
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.5s ease, top 0.5s ease;
+  z-index: 1000;
+
+}
+
+
+
+

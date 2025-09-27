@@ -8,6 +8,7 @@
 import UI, { inicializarPanel } from "./UI.js";
 import Juego from "./game.js";
 import { agregarNovedad } from "./utilities.js";
+window.agregarNovedad = agregarNovedad;
 import { cargarCasillas, dibujarFichas, moverFicha, getBoardData } from "./ui/board.js";
 import { inicializarListenersDados } from "./ui/dice.js";
 import { actualizarTurno } from "./ui/turno.js";
@@ -19,6 +20,7 @@ let ui;
 window.onload = () => {
   document.getElementById("pre-menu-modal").style.display = "block";
 };
+
 
 document.getElementById("start-game").addEventListener("click", () => {
   // ...tu lógica de creación de jugadores...
@@ -37,6 +39,8 @@ export async function iniciarJuego(jugadores) {
   await cargarCasillas();
   dibujarFichas(jugadores);
   dibujarPanelJugadores(jugadores);
+  window.dibujarPanelJugadores = dibujarPanelJugadores;
+
   inicializarPanel();
 
   boardData = getBoardData();
@@ -59,10 +63,14 @@ function aplicarAccionCarta(carta, jugador) {
 
   // Acción de dinero
   if (carta.action.money) {
-    jugador.dinero += carta.action.money; // suma o resta
-    document.getElementById("resultado").textContent =
-      `${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)}`;
-  }
+  jugador.dinero += carta.action.money; // suma o resta
+  const nombreCarta = getNombreCarta(carta.type);
+
+  document.getElementById("resultado").textContent =
+    `${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)} por carta de ${nombreCarta} 💵`;
+
+  agregarNovedad(`${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)} por carta de ${nombreCarta} 💵`);
+}
 
   // Ir a la cárcel
   if (carta.action.goTo && carta.action.goTo.toLowerCase() === "jail") {
@@ -81,6 +89,19 @@ function aplicarAccionCarta(carta, jugador) {
   dibujarPanelJugadores(game.jugadores);
   if (typeof window.dibujarMiniPaneles === 'function') {
     window.dibujarMiniPaneles(game.jugadores);
+  }
+}
+
+// Traducir tipo de carta a nombre amigable
+function getNombreCarta(type) {
+  if (!type) return "Carta";
+  switch (type.toLowerCase()) {
+    case "community_chest":
+      return "Cofre de Comunidad";
+    case "chance":
+      return "Sorpresa";
+    default:
+      return type;
   }
 }
 
@@ -133,23 +154,19 @@ document.getElementById("btn-terminar").addEventListener("click", () => {
 });
 
 function terminarJuego() {
-  // Ordenamos por dinero + valor de propiedades
   const ranking = game.jugadores.map(j => {
-    const patrimonio = j.dinero + (j.propiedades.length * 200); // puedes usar valor real de cada propiedad
+    const patrimonio = j.dinero + (j.propiedades.length * 200);
     return { nombre: j.nombre, pais: j.country, patrimonio };
   }).sort((a, b) => b.patrimonio - a.patrimonio);
 
-  // Mostrar en novedades
   agregarNovedad("🏁 El juego ha terminado. Ranking final:");
   ranking.forEach((j, i) => {
     agregarNovedad(`#${i + 1} ${j.nombre} (${j.pais}) - Patrimonio: $${j.patrimonio}`);
   });
 
-  // Opcional: deshabilitar botones de dados
   document.getElementById("btnLanzar").disabled = true;
   document.getElementById("btnManual").disabled = true;
   mostrarResultadosFinales(ranking);
-
 }
 
 function mostrarResultadosFinales(ranking) {
@@ -160,7 +177,7 @@ function mostrarResultadosFinales(ranking) {
   ranking.forEach((j, i) => {
     lista.innerHTML += `
       <div class="jugador-ranking">
-        <span>#${i + 1} ${j.nombre}</span>
+        <span>🏅 #${i + 1} ${j.nombre}</span>
         <img src="https://flagsapi.com/${j.pais.toUpperCase()}/flat/32.png" alt="Bandera">
         <span>💰 $${j.patrimonio}</span>
       </div>
@@ -168,8 +185,11 @@ function mostrarResultadosFinales(ranking) {
   });
 
   modal.classList.remove("oculto");
-
 }
+
+document.getElementById("cerrar-modal").addEventListener("click", () => {
+  document.getElementById("modal-resultados").classList.add("oculto");
+});
 //Cerrar modal resultados
 document.getElementById("modal-resultados").addEventListener("click", (e) => {
   const modalContent = document.querySelector(".modal-contenido");

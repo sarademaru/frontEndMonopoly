@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monopoly</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/modalRankings.css">
 </head>
 <body>
 
@@ -15,7 +16,6 @@
   <hr>
   <h2>Configuración del Juego</h2>
   <div class="setup-form">
-    <!-- Selección de jugadores -->
     <div class="player-count">
       <label for="player-count">Número de Jugadores:</label>
       <select id="player-count">
@@ -24,15 +24,15 @@
         <option value="4" selected>4 Jugadores</option>
       </select>
     </div>
-    <!-- Inputs de nickname y país -->
     <div id="players-setup"></div>
     <button id="start-game" class="btn btn-primary">Iniciar Juego</button>
   </div>
 </div>
 
 <!-- Botón terminar juego -->
-<button id="btn-terminar" class="btn btn-peligro">🏁 Terminar Juego</button>
-<!-- Tablero y controles del juego -->
+<button id="btn-terminar" class="btn-terminar-flotante oculto">🏁 Terminar Juego</button>
+
+<!-- Tablero y controles -->
 <div class="dice-container"> 
     <div class="dice">
         <div id="dice1" class="die">1</div> 
@@ -46,8 +46,9 @@
     </div>
     <p id="resultado"></p>
 </div>
+
 <h2 id="turno-actual" style="margin-top: 20px; text-align: center;"></h2>
-<!-- Paneles de jugadores visibles siempre -->
+
 <div id="mini-panels" class="mini-panels"></div>
 <div id="tablero">
     <div class="centro">
@@ -59,20 +60,15 @@
     </div>
 </div>
 
-<!-- Panel lateral derecho -->
+<!-- Panel lateral -->
 <div id="sidebar-panel" class="sidebar-panel">
   <div class="panel-contenido">
-    <button id="cerrar-panel" class="btn-cerrar">❌</button> <!-- Botón para cerrar -->
-    
-    <!-- Sección de jugadores -->
+    <button id="cerrar-panel" class="btn-cerrar">❌</button>
     <section class="jugadores-section">
       <h3>👤 Jugadores</h3>
       <div id="lista-jugadores"></div>
     </section>
-
     <hr>
-
-    <!-- Sección de novedades -->
     <section class="novedades-section">
       <h3>📰 Novedades</h3>
       <div id="log-novedades" class="log-novedades"></div>
@@ -80,18 +76,9 @@
   </div>
 </div>
 
-
-<!-- Botón flotante para desplegar panel -->
+<!-- Botón para desplegar panel -->
 <button id="toggle-panel" class="btn btn-secondary toggle-btn">📋 Jugadores y Novedades</button>
 
-<div id="cajonJugadores"></div>
-<div id="cartaCentro" class="carta-oculta">
-  <img id="imgCarta" src="" alt="Carta Monopoly">
-  <p id="textoCarta"></p>
-</div>
-
-<script type="module" src="./js/script.js"></script>
-<script type="module" src="./js/setup.js"></script>
 <!-- Modal Resultados Finales -->
 <div id="modal-resultados" class="modal oculto">
   <div class="modal-contenido">
@@ -101,5 +88,7 @@
   </div>
 </div>
 
+<script type="module" src="./js/script.js"></script>
+<script type="module" src="./js/setup.js"></script>
 </body>
 </html>
