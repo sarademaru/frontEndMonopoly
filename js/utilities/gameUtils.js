@@ -18,10 +18,11 @@ export function aplicarImpuesto(jugador, casilla) {
   jugador.dinero += monto; // como es negativo, resta
 
   document.getElementById("resultado").textContent =
-    `${jugador.nombre} pagó $${Math.abs(monto)} en ${casilla.name}`;
+    `${jugador.nombre} pagó $${Math.abs(monto)} en ${casilla.name} 💸`;
 
   const gameRef = window.game;
   if (gameRef) {
+    agregarNovedad(`${jugador.nombre} pago $${monto*-1} de impuesto 💸`);
     actualizarPanelJugadores(gameRef.jugadores);
     actualizarMiniPaneles(gameRef.jugadores);
   }
@@ -273,9 +274,9 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         const estadoEl = document.getElementById(`estado-${c.id}`);
         if (estadoEl) {
           // Solo cambiamos el texto de estado
-          estadoEl.textContent = "Ocupado";
+          estadoEl.textContent = `${jugador.token}`;
           estadoEl.classList.remove("disponible");
-          estadoEl.classList.add("ocupado");
+          estadoEl.classList.add(`${jugador.token}`);
 
           // Agregar dueño en un contenedor aparte
           let ownerInfo = document.getElementById(`owner-${c.id}`);
@@ -293,7 +294,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         }
 
         document.getElementById("resultado").textContent =
-          `${jugador.nombre} compró ${c.name} por $${c.price}`;
+          `${jugador.nombre} compró ${c.name} por $${c.price} 💸`;
+          agregarNovedad(`${jugador.nombre} compró ${c.name} por $${c.price} 💸`);  
       } else {
         alert("No tienes suficiente dinero para comprar esta propiedad.");
       }
@@ -343,8 +345,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       return propiedadesMismoColor.every(prop => prop.owner === jugador.nombre);
     };
 
-    // Botón para comprar casa
-    if (!c.hotel && (c.houses || 0) < 4) {
+    // Botón para comprar casa (solo si no está hipotecada)
+    if (!c.hipotecada && !c.hotel && (c.houses || 0) < 4) {
       const buyHouseBtn = document.createElement("button");
       buyHouseBtn.textContent = "Comprar Casa ($100)";
       buyHouseBtn.className = "btn btn-exito";
@@ -369,13 +371,14 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
           if (gameRef) {
             actualizarPanelJugadores(gameRef.jugadores);
             actualizarMiniPaneles(gameRef.jugadores);
+            agregarNovedad(`${jugador.nombre} compro una casa en ${c.name} 💸`);
           }
 
           // Actualizar casas en el tablero
           actualizarCasasEnTablero(c);
 
           document.getElementById("resultado").textContent =
-            `${jugador.nombre} compró una casa en ${c.name}`;
+            `${jugador.nombre} compró una casa en ${c.name} 💸`;
 
           // Cerrar modal y refrescar
           modal.style.display = "none";
@@ -386,8 +389,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
       actionsEl.appendChild(buyHouseBtn);
     }
 
-    // Botón para comprar hotel
-    if (!c.hotel && (c.houses || 0) === 4) {
+    // Botón para comprar hotel (solo si no está hipotecada)
+    if (!c.hipotecada && !c.hotel && (c.houses || 0) === 4) {
       const buyHotelBtn = document.createElement("button");
       buyHotelBtn.textContent = "Comprar Hotel ($250)";
       buyHotelBtn.className = "btn btn-secundario";
@@ -410,13 +413,15 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
           if (gameRef) {
             actualizarPanelJugadores(gameRef.jugadores);
             actualizarMiniPaneles(gameRef.jugadores);
+            agregarNovedad(`${jugador.nombre} compro un hotel en ${c.name} 💸`);
+            
           }
 
           // Actualizar hotel en el tablero
           actualizarCasasEnTablero(c);
 
           document.getElementById("resultado").textContent =
-            `${jugador.nombre} compró un hotel en ${c.name}`;
+            `${jugador.nombre} compró un hotel en ${c.name} 💸`;
 
           // Cerrar modal y refrescar
           modal.style.display = "none";
@@ -436,8 +441,9 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         actionsEl.appendChild(hipBtn);
         hipBtn.onclick = () => {
           if (jugador.hipotecarPropiedad(c)) {
-            alert(`${jugador.nombre} hipotecó ${c.name} y recibe $${c.mortgage}`);
             actualizarPanelJugadores(game.jugadores);
+            actualizarMiniPaneles(game.jugadores);
+            agregarNovedad(`${jugador.nombre} hipoteco ${c.name} y recibe $${c.mortgage} 💰`);
 
             // actualizar en tablero
             const estadoEl = document.getElementById(`estado-${c.id}`);
@@ -446,6 +452,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
               estadoEl.classList.remove("disponible", "ocupado");
               estadoEl.classList.add("hipotecada");
             }
+            document.getElementById("resultado").textContent =
+            `${jugador.nombre} hipoteco ${c.name} y recibe $${c.mortgage} 💰`;
           }
         };
         actionsEl.appendChild(hipBtn);
@@ -456,8 +464,11 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
         actionsEl.appendChild(deshipBtn);
         deshipBtn.onclick = () => {
           if (jugador.deshipotecarPropiedad(c)) {
-            alert(`${jugador.nombre} levantó hipoteca de ${c.name}`);
             actualizarPanelJugadores(game.jugadores);
+            actualizarMiniPaneles(game.jugadores);
+            agregarNovedad(`${jugador.nombre} levanto la hipoteca de ${c.name} 💸`);
+            document.getElementById("resultado").textContent =
+            `${jugador.nombre} levanto la hipoteca de ${c.name} 💸`;
 
             const estadoEl = document.getElementById(`estado-${c.id}`);
             if (estadoEl) {
@@ -465,7 +476,8 @@ export function mostrarDetalles(c, jugador = null, game, options = { fromLanding
               estadoEl.classList.remove("hipotecada", "disponible");
               estadoEl.classList.add("ocupado");
             }
-          } else {
+            
+          }else {
             alert("No tienes dinero suficiente para levantar la hipoteca.");
           }
         };
@@ -517,3 +529,29 @@ function actualizarCasasEnTablero(propiedad) {
     casillaDiv.appendChild(housesIndicator);
   }
 }
+
+// Calcula el patrimonio total de un jugador
+export function calcularPatrimonio(jugador) {
+  let patrimonio = jugador.dinero;
+
+  jugador.propiedades.forEach(p => {
+    const valorBase = Number(p.precio ?? p.price ?? 0);
+    const valorCasas = (p.houses || 0) * 100;
+    const valorHotel = p.hotel ? 200 : 0;
+
+    // Normalizamos la bandera de hipoteca
+    const estaHipotecada = p.hipotecada === true || p.mortgaged === true;
+
+    if (estaHipotecada) {
+      // restamos el valor de compra original de la propiedad
+      patrimonio -= valorBase;
+    } else {
+      patrimonio += valorBase + valorCasas + valorHotel;
+    }
+  });
+
+  return patrimonio;
+}
+
+
+

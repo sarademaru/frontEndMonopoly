@@ -27,18 +27,33 @@ export default class Juego {
     }
 
     moverJugadorActual(pasos) {
-        const jugador = this.getJugadorActual();
-        let nuevaPosicion = jugador.posicion + pasos;
+    const jugador = this.getJugadorActual();
+    let nuevaPosicion = jugador.posicion + pasos;
 
-        // Si pasa por la salida cobra $200
-        if (nuevaPosicion >= this.totalCasillas) {
-            nuevaPosicion = nuevaPosicion % this.totalCasillas;
-            jugador.dinero += 200;
-            console.log(`${jugador.nombre} pasó por la salida y recibe $200`);
+    // Si pasa por la salida cobra $200
+    if (nuevaPosicion >= this.totalCasillas) {
+        nuevaPosicion = nuevaPosicion % this.totalCasillas;
+        jugador.dinero += 200;
+        document.getElementById("resultado").textContent =
+        `${jugador.nombre} pasó por la salida y recibe $200 🎉`
+
+        // Mostrar en novedades
+        if (typeof window.agregarNovedad === "function") {
+            window.agregarNovedad(`${jugador.nombre} pasó por la salida y recibe $200 🎉`);
+        }
+
+        // Refrescar paneles
+        if (typeof window.dibujarPanelJugadores === "function") {
+            window.dibujarPanelJugadores(this.jugadores);
+        }
+        if (typeof window.dibujarMiniPaneles === "function") {
+            window.dibujarMiniPaneles(this.jugadores);
+        }
     }
 
     jugador.posicion = nuevaPosicion;
-}
+    }
+
     comprarPropiedadActual() {
         const jugador = this.getJugadorActual();
         const propiedad = this.propiedades[jugador.posicion];

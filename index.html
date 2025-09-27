@@ -13,14 +13,13 @@
   <h2>Bienvenido a Monopoly</h2>
   <ul class="mini-rules">
     <li>🎲 Tira los dados y avanza por el tablero</li>
-    <li>🏠 Compra calles y construye tu imperio</li>
+    <li>🏠 Compra propiedades y construye tu imperio</li>
     <li>💸 Cobra alquileres y lleva a tus rivales a la bancarrota</li>
   </ul>
   <hr>
-  
+
   <h2>Configuración del Juego</h2>
   <div class="setup-form">
-    <!-- Selección de jugadores -->
     <div class="player-count">
       <label for="player-count">Número de Jugadores:</label>
       <select id="player-count">
@@ -29,33 +28,37 @@
         <option value="4" selected>4 Jugadores</option>
       </select>
     </div>
-    <!-- Inputs de nickname y país -->
     <div id="players-setup"></div>
-    <button id="start-game" class="btn btn-primary"  disabled>Iniciar Juego</button>
+    <button id="start-game" class="btn btn-primary" disabled>🎮 Iniciar Juego</button>
+    
+    <!-- Botón de ranking global -->
+    <button id="btn-ranking-global" class="btn btn-ranking">🌍 Ver Ranking Global</button>
   </div>
 </div>
 
 <!-- Botón terminar juego -->
-<button id="btn-terminar" class="btn btn-peligro">🏁 Terminar Juego</button>
-<!-- Tablero y controles del juego -->
+<button id="btn-terminar" class="btn-terminar-flotante oculto">🏁 Terminar Juego</button>
+
+<!-- Tablero y controles -->
 <div class="dice-container"> 
     <div class="dice">
         <div id="dice1" class="die">1</div> 
         <div id="dice2" class="die">1</div>
     </div> 
-    <button id="btnLanzar" class="btn">Lanzar Dados</button>
+    <button id="btnLanzar" class="btn">🎲 Lanzar Dados</button>
     <div class="manual-inputs">
       <input id="inputDado1" type="number" min="1" max="6" placeholder="Dado1 (1-6)">
       <input id="inputDado2" type="number" min="1" max="6" placeholder="Dado2 (1-6)">
-      <button id="btnManual" class="btn">Lanzar Manual</button>
+      <button id="btnManual" class="btn">✋ Lanzar Manual</button>
     </div>
     <p id="resultado"></p>
 
     <!-- salir de la cárcel pagando -->
-<div class="acciones-botones" style="text-align: center; margin-top: 10px;"></div>
+    <div class="acciones-botones" style="text-align: center; margin-top: 10px;"></div>
 </div>
+
 <h2 id="turno-actual" style="margin-top: 20px; text-align: center;"></h2>
-<!-- Paneles de jugadores visibles siempre -->
+
 <div id="mini-panels" class="mini-panels"></div>
 <div id="tablero">
     <div class="centro">
@@ -67,20 +70,15 @@
     </div>
 </div>
 
-<!-- Panel lateral derecho -->
+<!-- Panel lateral -->
 <div id="sidebar-panel" class="sidebar-panel">
   <div class="panel-contenido">
-    <button id="cerrar-panel" class="btn-cerrar">❌</button> <!-- Botón para cerrar -->
-    
-    <!-- Sección de jugadores -->
+    <button id="cerrar-panel" class="btn-cerrar">❌</button>
     <section class="jugadores-section">
       <h3>👤 Jugadores</h3>
       <div id="lista-jugadores"></div>
     </section>
-
     <hr>
-
-    <!-- Sección de novedades -->
     <section class="novedades-section">
       <h3>📰 Novedades</h3>
       <div id="log-novedades" class="log-novedades"></div>
@@ -88,11 +86,28 @@
   </div>
 </div>
 
-
-<!-- Botón flotante para desplegar panel -->
+<!-- Botón para desplegar panel -->
 <button id="toggle-panel" class="btn btn-secondary toggle-btn">📋 Jugadores y Novedades</button>
 
-<div id="cajonJugadores"></div>
+<!-- Modal Resultados Finales -->
+<div id="modal-resultados" class="modal oculto">
+  <div class="modal-contenido">
+    <button id="cerrar-modal" class="btn-cerrar">❌</button>
+    <h2>🏆 Resultados Finales</h2>
+    <div id="ranking-final"></div>
+  </div>
+</div>
+
+<!-- Modal ranking global -->
+<div id="modal-ranking-global" class="modal oculto">
+  <div class="modal-contenido">
+    <button id="cerrar-ranking-global" class="btn-cerrar">❌</button>
+    <h2>🌍 Ranking Global</h2>
+    <div id="ranking-global-list"></div>
+  </div>
+</div>
+
+<!-- Carta en el centro -->
 <div id="cartaCentro" class="carta-oculta">
   <img id="imgCarta" src="" alt="Carta Monopoly">
   <p id="textoCarta"></p>
@@ -100,14 +115,5 @@
 
 <script type="module" src="./js/script.js"></script>
 <script type="module" src="./js/setup.js"></script>
-<!-- Modal Resultados Finales -->
-<div id="modal-resultados" class="modal oculto">
-  <div class="modal-contenido">
-    <h2>🏆 Resultados Finales</h2>
-    <div id="ranking-final"></div>
-    <button id="cerrar-modal" class="btn-neutro">Cerrar</button>
-  </div>
-</div>
-
 </body>
 </html>

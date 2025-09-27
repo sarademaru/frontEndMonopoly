@@ -1,4 +1,6 @@
 // js/UI.js
+import { actualizarPanelJugadores, actualizarMiniPaneles } from "./ui/paneles.js";
+
 export default class UI {
   constructor(game) {
     this.game = game; // instancia de Juego
@@ -15,14 +17,16 @@ export default class UI {
     await this.sleep(600);
 
     const { dado1, dado2, suma } = this.game.tirarDadosAleatorio();
-
     this.updateDiceDisplay({ dice1: dado1, dice2: dado2 });
+    
     const jugadorActual = this.game.getJugadorActual();
     document.getElementById("resultado").innerText =
         `${jugadorActual.nombre} sacó ${dado1} y ${dado2} (Total: ${suma})`;
 
     // mover jugador
     this.game.moverJugadorActual(suma);
+    actualizarMiniPaneles(this.game.jugadores);
+    actualizarPanelJugadores(this.game.jugadores);
 
     // actualizar ficha visual
     if (typeof window.colocarFicha === 'function') {
