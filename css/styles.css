@@ -124,8 +124,8 @@ body {
   margin: 6px;
   padding: 8px 12px;
   border-radius: 6px;
-  background: #333;
-  color: white;
+  /* background: #333333;
+  color: white; */
   border: none;
   cursor: pointer;
 }
@@ -590,11 +590,11 @@ body {
   color: #fff;
   font-weight: 600;
 }
-.btn-primario { background: #e11d48; }
-.btn-secundario { background: #0ea5e9; }
-.btn-neutro { background: #64748b; }
-.btn-peligro { background: #ef4444; }
-.btn-exito { background: #22c55e; }
+.btn-primario { background: #e11d48; color: #fff; }
+.btn-secundario { background: #0ea5e9; color: #fff; }
+.btn-neutro { background: #64748b; color: #fff;}
+.btn-peligro { background: #ef4444; color : #fff; }
+.btn-exito { background: #22c55e; color: #fff; }
 
 @media (max-width: 480px) {
   .panel-acciones {
