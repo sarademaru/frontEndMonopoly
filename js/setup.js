@@ -114,11 +114,15 @@ document.getElementById("start-game").addEventListener("click", async () => {
   const jugadores = [];
 
   for (let i = 1; i <= playerCount; i++) {
-    const name = document.getElementById(`player${i}-name`).value;
-    const country = document.getElementById(`player${i}-country`).value;
+    let name = document.getElementById(`player${i}-name`).value.trim();
+    let country = document.getElementById(`player${i}-country`).value.trim();
+
+    // 🔹 Valores por defecto si están vacíos
+    if (!name) name = `Jugador${i}`;
+    if (!country) country = "xx"; // código genérico si no selecciona país
 
     const jugador = new Jugador(name);
-    jugador.country = country; // se guarda el código del país 
+    jugador.country = country;
     jugador.dinero = 1500;
     jugador.token = tokenColors[i - 1];
     jugador.posicion = 0;
@@ -129,8 +133,8 @@ document.getElementById("start-game").addEventListener("click", async () => {
   await iniciarJuego(jugadores);
   dibujarMiniPaneles(jugadores);
   document.getElementById("pre-menu-modal").style.display = "none";
-  
 });
+
 
 function dibujarMiniPaneles(jugadores) {
   const panel = document.getElementById("mini-panels");

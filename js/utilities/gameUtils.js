@@ -529,3 +529,29 @@ function actualizarCasasEnTablero(propiedad) {
     casillaDiv.appendChild(housesIndicator);
   }
 }
+
+// Calcula el patrimonio total de un jugador
+export function calcularPatrimonio(jugador) {
+  let patrimonio = jugador.dinero;
+
+  jugador.propiedades.forEach(p => {
+    const valorBase = Number(p.precio ?? p.price ?? 0);
+    const valorCasas = (p.houses || 0) * 100;
+    const valorHotel = p.hotel ? 200 : 0;
+
+    // Normalizamos la bandera de hipoteca
+    const estaHipotecada = p.hipotecada === true || p.mortgaged === true;
+
+    if (estaHipotecada) {
+      // restamos el valor de compra original de la propiedad
+      patrimonio -= valorBase;
+    } else {
+      patrimonio += valorBase + valorCasas + valorHotel;
+    }
+  });
+
+  return patrimonio;
+}
+
+
+

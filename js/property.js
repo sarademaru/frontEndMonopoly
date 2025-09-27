@@ -6,6 +6,10 @@ export default class Propiedad {
         this.precio = precio;
         this.alquiler = alquiler;
         this.dueno = null;
+
+        this.houses = 0;        // Número de casas
+        this.hotel = false;     // true si tiene hotel
+        this.hipotecada = false; // true si está hipotecada
     }
 }
 // Si necesitas utilidades relacionadas con propiedades, impórtalas donde se usen.
