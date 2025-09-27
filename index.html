@@ -12,8 +12,13 @@
 <!-- Pre-menú: Bienvenida + Configuración -->
 <div id="pre-menu-modal">
   <h2>Bienvenido a Monopoly</h2>
-  <p>¿Listo para jugar?</p>
+  <ul class="mini-rules">
+    <li>🎲 Tira los dados y avanza por el tablero</li>
+    <li>🏠 Compra calles y construye tu imperio</li>
+    <li>💸 Cobra alquileres y lleva a tus rivales a la bancarrota</li>
+  </ul>
   <hr>
+  
   <h2>Configuración del Juego</h2>
   <div class="setup-form">
     <div class="player-count">
@@ -25,7 +30,7 @@
       </select>
     </div>
     <div id="players-setup"></div>
-    <button id="start-game" class="btn btn-primary">Iniciar Juego</button>
+    <button id="start-game" class="btn btn-primary"  disabled>Iniciar Juego</button>
   </div>
 </div>
 
@@ -45,6 +50,9 @@
       <button id="btnManual" class="btn">Lanzar Manual</button>
     </div>
     <p id="resultado"></p>
+
+    <!-- salir de la cárcel pagando -->
+<div class="acciones-botones" style="text-align: center; margin-top: 10px;"></div>
 </div>
 
 <h2 id="turno-actual" style="margin-top: 20px; text-align: center;"></h2>

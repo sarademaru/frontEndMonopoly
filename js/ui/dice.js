@@ -5,7 +5,7 @@
  */
 import { moverFicha } from "./board.js";
 import { actualizarTurno } from "./turno.js";
-
+import { mostrarAccionCarcel } from "./paneles.js";
 
 // ...para que los dados sirvan despues de dar "iniciar juego"...
 export function inicializarListenersDados({ game,
@@ -26,6 +26,7 @@ export function inicializarListenersDados({ game,
     jugador.turnosEnCarcel = 0;
     moverFicha(jugador);
     resultadoTexto.textContent = `${jugador.nombre} fue enviado a la cárcel 🚔`;
+    mostrarAccionCarcel(jugador, game);
   }
 
   // -------------------------
@@ -39,6 +40,7 @@ export function inicializarListenersDados({ game,
       const jugador = game.getJugadorActual();
 
       if (jugador.enCarcel) {
+        mostrarAccionCarcel(jugador, game);
         const resultado = game.rollDice();
         dice1.textContent = resultado.dice1;
         dice2.textContent = resultado.dice2;
@@ -85,8 +87,6 @@ export function inicializarListenersDados({ game,
 
         if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
           enviarACarcel(jugador);
-          game.siguienteTurno();
-          actualizarTurno(game);
           return;
         }
 
@@ -148,6 +148,7 @@ export function inicializarListenersDados({ game,
         const jugador = game.getJugadorActual();
 
         if (jugador.enCarcel) {
+          mostrarAccionCarcel(jugador, game);
           const resultado = game.tirarDadosManual(dado1, dado2);
           dice1.textContent = resultado.dado1;
           dice2.textContent = resultado.dado2;
@@ -193,8 +194,6 @@ export function inicializarListenersDados({ game,
 
           if (casilla && casilla.action && casilla.action.goTo && casilla.action.goTo.toLowerCase() === "jail") {
             enviarACarcel(jugador);
-            game.siguienteTurno();
-            actualizarTurno(game);
             return;
           }
 
