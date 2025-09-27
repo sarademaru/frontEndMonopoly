@@ -100,15 +100,3 @@ export default class Juego {
         };
     }
 }
-
-// ============================
-// Ejemplo de uso
-// ============================
-
-// const juego = new Juego(jugadores, propiedades);
-// const currentPlayer = juego.getJugadorActual();
-
-// const diceResult = juego.rollDice();
-// juego.addGameEvent(
-//     `${currentPlayer.name} lanzó ${diceResult.dice1} y ${diceResult.dice2} (Total: ${diceResult.total})`
-// );

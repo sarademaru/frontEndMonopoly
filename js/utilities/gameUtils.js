@@ -37,27 +37,83 @@ export function cobrarRenta(jugador, casilla) {
   const dueno = gameRef?.jugadores.find(j => j.nombre === casilla.owner);
   if (!dueno || dueno === jugador) return; // no cobra renta a sí mismo
 
-  // calcular renta (básico: solo renta base)
-  let renta = 0;
+  // calcular renta (según casas/hotel si es property, si no fallback actual)
+let renta = 0;
+let rentaDetalle = "";
+
+if (casilla.type === "property") {
+  const houses = casilla.houses || 0;
+  const hotel = !!casilla.hotel;
+  const r = casilla.rent || {};
+
+  // Hotel: tolerar with_hotel y withHotel
+  if (hotel && (r.with_hotel != null || r.withHotel != null)) {
+    renta = Number(r.with_hotel ?? r.withHotel);
+    rentaDetalle = " (hotel)";
+  }
+  // Casas: tolerar withHouse (array) y with_houses (obj)
+  else if (houses > 0) {
+    let valorCasa = null;
+
+    if (Array.isArray(r.withHouse)) {
+      const idx = houses - 1;
+      valorCasa = r.withHouse[idx];
+    }
+    if (valorCasa == null && r.with_houses) {
+      const keyStr = String(houses);
+      valorCasa = r.with_houses[keyStr] ?? r.with_houses[houses];
+    }
+
+    if (valorCasa != null) {
+      renta = Number(valorCasa);
+      rentaDetalle = ` (${houses} casa${houses > 1 ? 's' : ''})`;
+    } else if (typeof r.base === "number") {
+      renta = r.base;
+      rentaDetalle = " (base)";
+    }
+  }
+  // Sin casas ni hotel: base
+  else if (typeof r.base === "number") {
+    renta = r.base;
+    rentaDetalle = " (base)";
+  }
+  // Fallbacks previos
+  else if (typeof casilla.rent === "number") {
+    renta = casilla.rent;
+  } else if (typeof casilla.price === "number") {
+    renta = Math.floor(casilla.price * 0.1);
+  }
+} else {
+  // fallback para otros tipos (deja tu lógica actual)
   if (typeof casilla.rent === "number") {
     renta = casilla.rent;
   } else if (casilla.rent && casilla.rent.base) {
     renta = casilla.rent.base;
   } else if (typeof casilla.price === "number") {
-    // fallback: renta básica como 10% del precio
     renta = Math.floor(casilla.price * 0.1);
   }
+}
 
+console.log("DEBUG cobrarRenta", {
+  name: casilla.name,
+  houses: casilla.houses,
+  hotel: casilla.hotel,
+  rentBase: casilla.rent?.base,
+  withHouse: casilla.rent?.withHouse,
+  with_houses: casilla.rent?.with_houses,
+  withHotel: casilla.rent?.withHotel,
+  with_hotel: casilla.rent?.with_hotel,
+  chosen: renta
+});
   // transferir dinero
   jugador.dinero -= renta;
-  agregarNovedad(`${jugador.nombre} pagó $${renta} de alquiler 💸`);
+  agregarNovedad(`${jugador.nombre} pagó $${renta} de renta${rentaDetalle} por ${casilla.name} 💸`);
   dueno.dinero += renta;
   agregarNovedad(`${dueno.nombre} recibió $${renta} de alquiler 💰`);
 
   // mostrar resultado
   document.getElementById("resultado").textContent =
-    `${jugador.nombre} pagó $${renta} de renta a ${dueno.nombre}`;
-
+  `${jugador.nombre} pagó $${renta} de renta${rentaDetalle} a ${dueno.nombre} por ${casilla.name}`;
   if (gameRef) {
     actualizarPanelJugadores(gameRef.jugadores);
     actualizarMiniPaneles(gameRef.jugadores);
