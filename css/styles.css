@@ -32,7 +32,6 @@ body {
     color: var(--text-primary);
 }   
 
-
 /* ========== PANEL DE ACCIONES ========== */
 .panel-acciones {
   position: fixed;
@@ -98,6 +97,7 @@ body {
     max-height: 60vh;
   }
 }
+
 /* ========== PANEL DESPLEGABLE JUGADORES Y LOG ========== */
 .sidebar-panel {
   position: fixed;
@@ -162,13 +162,12 @@ body {
   border-bottom: 1px dashed #ccc;
 }
 
-
 /* ========== BOTÓN FLOTANTE SUPERIOR DERECHO ========== */
 .toggle-btn {
   position: fixed;
-  top: 20px;       /* arriba */
-  right: 20px;     /* a la derecha */
-  z-index: 1101;   /* más alto que el panel */
+  top: 20px;
+  right: 20px;
+  z-index: 1101;
   padding: 8px 14px;
   background: #0ea5e9;
   color: #fff;
@@ -178,9 +177,11 @@ body {
   cursor: pointer;
   transition: background 0.2s ease;
 }
-
 .toggle-btn:hover {
   background: #0284c7;
+}
+.toggle-btn.oculto {
+  display: none !important;
 }
 
 /* Tarjeta de cada jugador */
@@ -227,15 +228,13 @@ body {
   font-weight: bold;
   color: #16a34a; 
 }
-
-/* Si dinero bajo*/
 .jugador-panel .dinero.negativo {
   color: #dc2626; 
 }
 
 #end-game-btn {
   position: relative;
-  left: -40px; /* mueve el botón un poco a la izquierda */
+  left: -40px;
   padding: 8px 16px;
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff;
@@ -246,19 +245,16 @@ body {
   transition: all 0.2s ease-in-out;
   box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
 }
-
 #end-game-btn:hover {
   background: linear-gradient(135deg, #f87171, #ef4444);
-  transform: scale(1.05); /* efecto de agrandar */
+  transform: scale(1.05);
   box-shadow: 0 6px 14px rgba(220, 38, 38, 0.45);
 }
-
 #end-game-btn:active {
-  transform: scale(0.95); /* efecto de presionado */
+  transform: scale(0.95);
 }
 
 /* ========== Panel siempre visible de jugadores ========== */
-/* Contenedor en grid */
 #mini-panels {
   display: flex;
   justify-content: center;
@@ -266,8 +262,6 @@ body {
   margin: 20px auto;
   flex-wrap: wrap;
 }
-
-/* Cada mini tarjeta */
 .mini-card {
   background: #fff;
   border-radius: 10px;
@@ -278,12 +272,9 @@ body {
   text-align: center;
   transition: transform 0.2s;
 }
-
 .mini-card:hover {
   transform: translateY(-4px);
 }
-
-/* Encabezado con token + bandera + iniciales */
 .mini-header {
   display: flex;
   align-items: center;
@@ -291,20 +282,15 @@ body {
   gap: 6px;
   margin-bottom: 6px;
 }
-
 .mini-header strong {
   font-size: 1rem;
 }
-
-/* Bandera pequeña */
 .mini-flag {
   width: 24px;
   height: 16px;
   border: 1px solid #ccc;
   border-radius: 2px;
 }
-
-/* Cuerpo con info */
 .mini-body p {
   margin: 2px 0;
   font-size: 0.85rem;
@@ -314,7 +300,7 @@ body {
 .btn-terminar-flotante {
   position: fixed;
   top: 20px;
-  left: 20px; /* a la izquierda */
+  left: 20px;
   background: linear-gradient(135deg, #ff4b5c, #ff1e3c);
   color: #fff;
   font-size: 16px;
@@ -326,11 +312,13 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.5s ease, top 0.5s ease;
   z-index: 1000;
-
+}
+.btn-terminar-flotante.oculto {
+  display: none !important;
 }
 
 /* ==========================
-   BOTÓN RANKING GLOBAL
+  BOTÓN RANKING GLOBAL
 ========================== */
 .btn-ranking {
   display: inline-block;
@@ -346,19 +334,17 @@ body {
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(0,0,0,0.25);
 }
-
 .btn-ranking:hover {
   background: linear-gradient(135deg, #005ce6, #0099cc);
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
-
 .btn-ranking:active {
   transform: scale(0.97);
 }
 
 /* ==========================
-   MODALES (Resultados / Ranking Global)
+  MODALES (Resultados / Ranking Global)
 ========================== */
 .modal {
   position: fixed;
@@ -372,11 +358,9 @@ body {
   justify-content: center;
   z-index: 9999;
 }
-
 .modal.oculto {
   display: none;
 }
-
 .modal-contenido {
   background: #fff;
   border-radius: 12px;
@@ -388,19 +372,10 @@ body {
   box-shadow: 0 6px 20px rgba(0,0,0,0.35);
   animation: aparecerModal 0.3s ease-out;
 }
-
 @keyframes aparecerModal {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
 }
-
-/* Botón cerrar (X) */
 .btn-cerrar {
   position: absolute;
   top: 12px;
@@ -412,10 +387,7 @@ body {
   color: #666;
   transition: color 0.2s ease;
 }
-
-.btn-cerrar:hover {
-  color: #e74c3c;
-}
+.btn-cerrar:hover { color: #e74c3c; }
 
 /* ==========================
   LISTA DE JUGADORES RANKING
@@ -432,7 +404,6 @@ body {
   font-size: 15px;
   font-weight: bold;
 }
-
 .jugador-ranking img {
   width: 28px;
   height: 20px;
@@ -440,3 +411,50 @@ body {
   border: 1px solid #ddd;
   border-radius: 3px;
 }
+
+/* ========== ESTADOS COMUNES ========== */
+.oculto {
+  display: none !important;
+}
+
+/* ========== RESPONSIVE BOTONES SUPERIORES ========== */
+@media (max-width: 768px) {
+  #btn-terminar,
+  #toggle-panel {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+}
+@media (max-width: 480px) {
+  #btn-terminar,
+  #toggle-panel {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: block;
+    position: static;
+    margin: 5px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Contenedor para agrupar los botones superiores */
+  .top-buttons {
+    display: flex;
+    flex-direction: column-reverse; /* para invertir el orden */
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  #btn-terminar,
+  #toggle-panel {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    position: static !important;
+    margin: 0;
+    width: auto;
+  }
+}
+

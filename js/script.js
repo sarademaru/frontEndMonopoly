@@ -55,9 +55,11 @@ export async function iniciarJuego(jugadores) {
     mostrarCarta,
     mostrarDetalles
   });
-
   agregarNovedad(`🎉 El juego ha comenzado con ${jugadores.length} jugadores.`);
   actualizarTurno(game);
+
+  document.getElementById("btn-terminar").classList.remove("oculto");
+  document.getElementById("toggle-panel").classList.remove("oculto");
 }
 
 // -------------------------
@@ -145,20 +147,18 @@ document.getElementById("btn-terminar").addEventListener("click", () => {
 let _scoresEnviados = false;  // evita doble click
 
 async function terminarJuego() {
+  if (_scoresEnviados) return; // para evita que se vuelva a ejecutar
+  _scoresEnviados = true;
+
   window.juegoTerminado = true;
 
-  const ranking = game.jugadores.map(j => {
-    return {
-      nombre: j.nombre,
-      pais: j.country,
-      patrimonio: calcularPatrimonio(j)
-    };
-  }).sort((a, b) => b.patrimonio - a.patrimonio);
+  const ranking = game.jugadores.map(j => ({
+    nombre: j.nombre,
+    pais: j.country,
+    patrimonio: calcularPatrimonio(j)
+  })).sort((a, b) => b.patrimonio - a.patrimonio);
 
-  // 🔴 Enviar cada jugador al backend de forma secuencial
   for (const j of ranking) {
-    console.log("Enviando jugador:", j);
-
     if (j.nombre && j.pais) {
       try {
         await fetch(`${API_BASE}/score-recorder`, {
@@ -173,19 +173,24 @@ async function terminarJuego() {
       } catch (err) {
         console.error("Error enviando score:", err);
       }
-    } else {
-      console.warn("Jugador ignorado porque falta nombre o país:", j);
     }
   }
 
-  // Bloquear los dados
   document.getElementById("btnLanzar").disabled = true;
   document.getElementById("btnManual").disabled = true;
 
   mostrarResultadosFinales(ranking);
-}
 
+  // Mostrar overlay de fin
+  document.getElementById("game-overlay")?.classList.remove("oculto");
 
+  // Ocultar pre-menú definitivamente
+  const preMenu = document.getElementById("pre-menu-modal");
+  if (preMenu) preMenu.style.display = "none";
+  
+  document.getElementById("btn-terminar").classList.add("oculto");
+  document.getElementById("toggle-panel").classList.add("oculto");
+} 
 
 
 function mostrarResultadosFinales(ranking) {
@@ -224,7 +229,7 @@ function mostrarRankingGlobal(jugadores) {
   lista.innerHTML = "";
 
   jugadores.forEach((j, i) => {
-    let medalla = "🎖️";
+    let medalla = "🪵";
     if (i === 0) medalla = "🥇";
     else if (i === 1) medalla = "🥈";
     else if (i === 2) medalla = "🥉";
