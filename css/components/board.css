@@ -1,3 +1,4 @@
+
 /* ========== TABLERO ========== */
 #tablero {
     margin-top: var(--spacing-lg);
@@ -11,6 +12,8 @@
     border: var(--border-width-heavy) solid var(--board-border);
     position: relative;
     width: 90vw;
+    height: 130vmin;
+    
 }
 
 .panel-jugadores {
@@ -107,6 +110,7 @@
   margin: var(--border-width);
   display: flex;
   flex-direction: column;
+  
   align-items: center;
   justify-content: flex-start;
   font-size: var(--cell-font-size);
@@ -156,6 +160,18 @@
     padding: var(--spacing-lg);
     background: var(--center-bg);
 }
+
+.ficha {
+  font-size: 3vmin;         /* tamaño relativo a pantalla */
+  margin: 0.2vmin;
+  display: inline-block;    /* asegura que se rendericen correctamente */
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1;
+}
+
 
 .logo-monopoly {
     max-width: 300%;
@@ -316,6 +332,10 @@
     font-size: 0.6rem;
     bottom: 2px;
   }
+  .ficha {
+    font-size: 2.0vmin;
+  }
+
 }
 
 /* Móviles normales (≤480px) */
@@ -353,12 +373,15 @@
     height: auto;    
     margin-bottom: var(--spacing-lg);
   }
+    .ficha {
+    font-size: 3.0vmin;
+  }
 }
 
 /* Tablets (≤768px) */
 @media (max-width: 768px) {
   #tablero {
-    width: 95vmin;
+    width: 80vmin;
     margin-top: var(--spacing-sm);
     overflow: hidden;
   }
@@ -392,6 +415,10 @@
     height: auto;    
     margin-bottom: var(--spacing-lg);
   }
+
+    .ficha {
+    font-size: 3.0vmin;
+  }
 }
 
 
@@ -401,14 +428,31 @@
     font-size: 0.75rem;
     padding: 3px 2px;
   }
+
+  .cartas img {
+    min-width: 100px;
+    height: 100px;
+    margin: var(--spacing-xs);
+  }
+
+   #tablero {
+    width: 170vmin;
+    height: 170vmin;
+  
+    overflow: hidden;
+  }
   .edificaciones {
     font-size: 1rem;
   }
    .logo-monopoly {
-    max-width: 1000px; /* lo haces más pequeño */
+    min-width: 600px; /* lo haces más pequeño */
     height: auto;    
     margin-bottom: var(--spacing-lg);
   }
+.ficha {
+    font-size: 4.0vmin;
+  }
+
 }
 
 

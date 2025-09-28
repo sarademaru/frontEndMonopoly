@@ -111,24 +111,28 @@ export function getBoardData() {
 }
 
 
-export function dibujarFichas(jugadores) {
-  console.log("Dibujando fichas para:", jugadores);
-  const fichasSalida = document.getElementById("fichas-salida");
-  fichasSalida.innerHTML = "";
-  jugadores.forEach((jugador) => {
-    const ficha = document.createElement("span");
-    ficha.className = "ficha";
-
-    const nombreLimpio = jugador.nombre.replace(/\s+/g, "");
-    ficha.id = `ficha-${nombreLimpio}`;
-
-    ficha.textContent = jugador.token || "🔴";
-    ficha.title = jugador.nombre;
-    ficha.style.fontSize = "2rem";
-    ficha.style.marginRight = "5px";
-    fichasSalida.appendChild(ficha);
-    console.log("Ficha agregada:", ficha);
-  });
+export function dibujarFichas(jugadores) {   
+  console.log("Dibujando fichas para:", jugadores);   
+  const fichasSalida = document.getElementById("fichas-salida");    
+  
+  fichasSalida.innerHTML = "";   
+  jugadores.forEach((jugador) => {     
+    const ficha = document.createElement("span");     
+    ficha.className = "ficha"; // Esta clase ya tiene todo el CSS responsive
+    
+    const nombreLimpio = jugador.nombre.replace(/\s+/g, "");     
+    ficha.id = `ficha-${nombreLimpio}`;      
+    
+    ficha.textContent = jugador.token || "🔴";     
+    ficha.title = jugador.nombre;     
+    
+    // Elimina estos estilos inline, ahora los maneja CSS:
+    // ficha.style.fontSize = "2rem";
+    // ficha.style.marginRight = "5px";
+    
+    fichasSalida.appendChild(ficha);     
+    console.log("Ficha agregada:", ficha);   
+  }); 
 }
 
 // Funcion para mover la ficha del jugador en el tablero
