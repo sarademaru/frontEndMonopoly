@@ -42,38 +42,33 @@
   <button id="toggle-panel" class="btn btn-secondary toggle-btn oculto">📋 Jugadores y Novedades</button>
 </div>
 
-
 <h2 id="turno-actual" style="margin-top: 20px; text-align: center;"></h2>
 
 <div id="mini-panels" class="mini-panels"></div>
+
 <div id="tablero">
     <div class="centro">
-        <img src="assets/monopoly-logo.png" alt="Monopoly" class="logo-monopoly">
-        <div class="cartas">
-          <img src="assets/sorpresa.png" alt="Carta Sorpresa">
-          <img src="assets/comunidad.png" alt="Carta Comunidad">
-        </div>
-    </div>
-</div>
-
-<!-- Tablero y controles -->
-<div class="dice-container"> 
+      <div class="dice-container"> 
     <div class="dice">
         <div id="dice1" class="die">1</div> 
         <div id="dice2" class="die">1</div>
     </div> 
     <button id="btnLanzar" class="btn">🎲 Lanzar Dados</button>
-    <div class="manual-inputs">
+    <p id="resultado"></p>
+</div>
+        <img src="assets/monopoly-logo.png" alt="Monopoly" class="logo-monopoly">
+        
+        <!-- Botón para salir de la cárcel -->
+    <div class="acciones-botones" id="btn-carcel" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;">
+      <button class="btn">💰 Pagar para salir</button>
+    </div>
+    </div>
+</div>
+<div class="manual-inputs">
       <input id="inputDado1" type="number" min="1" max="6" placeholder="Dado1 (1-6)">
       <input id="inputDado2" type="number" min="1" max="6" placeholder="Dado2 (1-6)">
       <button id="btnManual" class="btn">✋ Lanzar Manual</button>
     </div>
-    <p id="resultado"></p>
-
-    <!-- salir de la cárcel pagando -->
-    <div class="acciones-botones" style="text-align: center; margin-top: 10px;"></div>
-</div>
-
 <!-- Panel lateral -->
 <div id="sidebar-panel" class="sidebar-panel">
   <div class="panel-contenido">

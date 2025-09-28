@@ -4,10 +4,10 @@
 
     :root {
     /* Colores tradicionales de Monopoly */
-    --monopoly-green: #6ead8c;
+    --monopoly-green: #be3631;
     --monopoly-red: #ed1c24;
-    --monopoly-blue: #0066cc;
-    --monopoly-dark-green: #004225;
+    --monopoly-blue: #cc5500;
+    --monopoly-dark-green: #ac0a0a;
     --monopoly-cream: #f7f3e9;
     --monopoly-gold: #ffd700;
     --monopoly-dark-red: #c41e3a;
@@ -112,10 +112,11 @@
 
 #pre-menu-modal h2:first-of-type {
   font-size: var(--font-size-huge);
-  background:  linear-gradient(135deg, var(--monopoly-green), var(--monopoly-gold));
+  background: linear-gradient(135deg, var(--monopoly-gold), var(--monopoly-cream));
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.224);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.534);
 }
 
 #pre-menu-modal p {

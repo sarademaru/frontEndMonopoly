@@ -1,5 +1,5 @@
 /* ============================================
-   DICE COMPONENT - DADOS Y CONTROLES
+   DICE COMPONENT - DADOS Y CONTROLES (OPTIMIZADO)
    ============================================ */
 
 /* ========== CONTENEDOR PRINCIPAL DE DADOS ========== */
@@ -7,7 +7,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: var(--spacing-xxl);
+    gap: var(--spacing-xl);
     margin-top: var(--spacing-lg);
     perspective: 600px;
 }
@@ -29,35 +29,43 @@
 
 /* ========== ESTILO DE CADA DADO ========== */
 .die {
-    width: var(--dice-size);
-    height: var(--dice-size);
-    background: var(--dice-bg);
-    border: var(--border-width-heavy) solid var(--dice-border);
-    border-radius: var(--border-radius-md);
+    width: var(--dice-size, 50px);
+    height: var(--dice-size, 50px);
+    background: var(--dice-bg, #ffffff);
+    border: var(--border-width-heavy, 2px) solid var(--dice-border, #333);
+    border-radius: var(--border-radius-md, 8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--dice-font-size);
-    font-weight: var(--font-weight-heavy);
-    color: var(--dice-text);
-    box-shadow: var(--shadow-medium);
-    transition: transform var(--transition-normal);
+    font-size: var(--dice-font-size, 24px);
+    font-weight: var(--font-weight-heavy, 700);
+    color: var(--dice-text, #333);
+    box-shadow: var(--shadow-medium, 0 4px 8px rgba(0,0,0,0.2));
+    transition: transform var(--transition-normal, 0.3s ease);
 }
 
-/* ========== BOTONES DE DADOS ========== */
+/* ========== BOTONES DE DADOS (TAMAÑOS REDUCIDOS) ========== */
 .dice-container button {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: var(--font-size-md);
+    padding: 8px 16px; /* Reducido significativamente */
+    font-size: 0.9rem; /* Más pequeño */
     cursor: pointer;
     border: none;
-    border-radius: var(--border-radius-xs);
-    background-color: var(--dice-button-bg);
-    color: var(--text-white);
-    transition: background-color var(--transition-normal);
+    border-radius: 6px;
+    background-color: var(--dice-button-bg, #4CAF50);
+    color: var(--text-white, white);
+    transition: all 0.2s ease;
+    min-height: 36px; /* Reducido de 44px */
+    line-height: 1.2;
+    font-weight: 500;
 }
 
 .dice-container button:hover {
-    background-color: var(--dice-button-hover);
+    background-color: var(--dice-button-hover, #45a049);
+    transform: translateY(-1px);
+}
+
+.dice-container button:active {
+    transform: translateY(0);
 }
 
 /* ========== ANIMACIÓN DE LANZAMIENTO ========== */
@@ -71,55 +79,54 @@
     50%      { transform: rotate(180deg); }
     75%      { transform: rotate(270deg); }
 }
+
+/* ========== INPUTS MANUALES (OPTIMIZADOS) ========== */
 .manual-inputs {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-sm, 8px);
     margin-top: var(--spacing-sm);
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    padding: var(--spacing-md);
+    padding: 12px; /* Reducido */
     background: rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius-lg);
-    border: var(--border-width) solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-lg, 12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .manual-inputs input {
-    width: 80px;
-    padding: var(--spacing-sm);
-    border: var(--border-width-thick) solid var(--text-secondary);
-    border-radius: var(--border-radius-sm);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
+    width: 60px; /* Más pequeño */
+    padding: 6px 8px; /* Reducido */
+    border: 2px solid var(--text-secondary, #666);
+    border-radius: 4px;
+    font-size: 0.85rem; /* Más pequeño */
+    font-weight: 600;
     text-align: center;
-    background: var(--modal-content-bg);
-    color: var(--text-primary);
-    transition: var(--transition-normal);
+    background: var(--modal-content-bg, white);
+    color: var(--text-primary, #333);
+    transition: var(--transition-normal, 0.3s ease);
+    min-height: 32px; /* Reducido */
 }
 
 .manual-inputs input:focus {
     outline: none;
-    border-color: var(--monopoly-gold);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    border-color: var(--monopoly-gold, #ffd700);
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
     background: rgba(255, 255, 255, 0.95);
 }
 
-.manual-inputs input:invalid {
-    border-color: #dc3545;
-    box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
-}
-
 .manual-inputs button {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 6px 12px; /* Significativamente reducido */
     background: linear-gradient(135deg, #6c757d, #495057);
-    color: var(--text-white);
+    color: white;
     border: none;
-    border-radius: var(--border-radius-sm);
+    border-radius: 4px;
     cursor: pointer;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    transition: var(--transition-normal);
-    min-height: 36px;
+    font-size: 0.8rem; /* Más pequeño */
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-height: 32px; /* Reducido */
+    line-height: 1.1;
 }
 
 .manual-inputs button:hover {
@@ -130,15 +137,15 @@
 /* ========== RESULTADO ========== */
 #resultado {
     margin-top: var(--spacing-md);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-lg);
-    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary, #c42020);
     text-align: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(255, 215, 0, 0.1);
-    border-radius: var(--border-radius-lg);
-    border: var(--border-width) solid rgba(255, 215, 0, 0.3);
-    min-height: 40px;
+    padding: 8px 16px; /* Reducido */
+    background: rgba(184, 11, 11, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 13, 0, 0.384);
+    min-height: 20px; /* Reducido */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -155,7 +162,7 @@
     }
     50% {
         background: rgba(255, 215, 0, 0.7);
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
     100% {
         background: rgba(255, 215, 0, 0.1);
@@ -163,64 +170,19 @@
     }
 }
 
-/* ========== ESTADOS ESPECIALES ========== */
-.dice-container.disabled {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-.dice-container.rolling .die {
-    pointer-events: none;
-}
-
 /* ========== RESPONSIVE PARA DADOS ========== */
 
-/* TABLET VERTICAL Y MÓVIL GRANDE (hasta 767px) */
+/* TABLET Y MÓVIL GRANDE (hasta 767px) */
 @media (max-width: 767px) {
     #dice-container {
-        gap: var(--spacing-lg);
+        gap: var(--spacing-lg, 24px);
         margin-top: var(--spacing-sm);
         padding: var(--spacing-sm);
     }
     
     .dice-container {
         gap: var(--spacing-sm);
-        padding: var(--spacing-md);
-    }
-    
-    .die {
-        width: 45px;
-        height: 45px;
-        font-size: 22px;
-    }
-    
-    .manual-inputs {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-sm);
-    }
-    
-    .manual-inputs input {
-        width: 100%;
-        max-width: 120px;
-        margin: 0 auto;
-    }
-}
-
-/* MÓVIL ESTÁNDAR (hasta 480px) */
-@media (max-width: 480px) {
-    #dice-container {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        padding: var(--spacing-xs);
-        margin-top: var(--spacing-xs);
-    }
-    
-    .dice-container {
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-        padding: var(--spacing-sm);
+        padding: 12px;
     }
     
     .die {
@@ -230,81 +192,156 @@
     }
     
     .dice-container button {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: var(--font-size-sm);
+        padding: 6px 12px; /* Consistente */
+        font-size: 0.85rem;
+        min-height: 32px;
+    }
+    
+    .manual-inputs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .manual-inputs input {
         width: 100%;
+        max-width: 80px;
+        margin: 0 auto;
+        min-height: 30px;
+    }
+    
+    .manual-inputs button {
+        padding: 5px 10px;
+        min-height: 30px;
+        font-size: 0.75rem;
+    }
+}
+
+/* MÓVIL ESTÁNDAR (hasta 480px) */
+@media (max-width: 480px) {
+    #dice-container {
+        flex-direction: column;
+        gap: 12px;
+        padding: 8px;
+        margin-top: 8px;
+    }
+    
+    .dice-container {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    .die {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+    
+    .dice-container button {
+        padding: 5px 10px; /* Muy compacto */
+        font-size: 0.8rem;
+        width: 100%;
+        min-height: 30px;
     }
     
     #resultado {
-        font-size: var(--font-size-md);
-        margin-top: var(--spacing-sm);
+        font-size: 0.9rem;
+        margin-top: 8px;
+        padding: 6px 12px;
+        min-height: 28px;
     }
 }
 
 /* MÓVIL PEQUEÑO (hasta 320px) */
 @media (max-width: 320px) {
     .die {
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
     }
     
     .dice {
-        gap: var(--spacing-xs);
+        gap: 4px;
     }
     
     .dice-container button {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: var(--font-size-xs);
+        padding: 4px 8px; /* Mínimo */
+        font-size: 0.75rem;
+        min-height: 28px;
     }
     
     .manual-inputs input {
-        width: 60px;
-        padding: var(--spacing-xs);
+        width: 50px;
+        padding: 4px 6px;
+        min-height: 26px;
+        font-size: 0.75rem;
+    }
+    
+    .manual-inputs button {
+        padding: 4px 8px;
+        min-height: 26px;
+        font-size: 0.7rem;
     }
 }
 
 /* ========== ORIENTACIÓN LANDSCAPE ========== */
 @media screen and (max-height: 500px) and (orientation: landscape) {
     #dice-container {
-        margin-top: var(--spacing-xs);
+        margin-top: 4px;
         flex-direction: row;
-        gap: var(--spacing-md);
-        padding: var(--spacing-xs);
+        gap: 16px;
+        padding: 4px;
     }
     
     .dice-container {
-        margin-bottom: var(--spacing-xs);
-        padding: var(--spacing-sm);
+        margin-bottom: 4px;
+        padding: 8px;
     }
     
     .die {
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
     }
     
     .dice-container button {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: var(--font-size-sm);
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        min-height: 26px;
     }
     
     #resultado {
-        font-size: var(--font-size-sm);
-        margin-top: var(--spacing-xs);
-        padding: var(--spacing-xs);
+        font-size: 0.8rem;
+        margin-top: 4px;
+        padding: 4px 8px;
+        min-height: 24px;
     }
     
     .manual-inputs {
-        padding: var(--spacing-xs);
-        margin-top: var(--spacing-xs);
+        padding: 6px;
+        margin-top: 4px;
+    }
+    
+    .manual-inputs input,
+    .manual-inputs button {
+        min-height: 24px;
+        padding: 3px 6px;
+        font-size: 0.7rem;
     }
 }
 
-/* ========== TABLET LANDSCAPE ========== */
-@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+/* ========== ESCRITORIO GRANDE ========== */
+@media screen and (min-width: 1200px) {
     #dice-container {
-        margin-top: var(--spacing-md);
+        gap: 40px;
+        padding: 20px;
+    }
+    
+    .dice-container {
+        padding: 20px;
     }
     
     .die {
@@ -312,87 +349,77 @@
         height: 55px;
         font-size: 26px;
     }
-}
-
-/* ========== ESCRITORIO GRANDE ========== */
-@media screen and (min-width: 1200px) {
-    #dice-container {
-        gap: 60px;
-        padding: var(--spacing-lg);
-    }
-    
-    .dice-container {
-        padding: var(--spacing-xl);
-    }
-    
-    .die {
-        width: 60px;
-        height: 60px;
-        font-size: 28px;
-    }
     
     .dice-container button {
-        padding: var(--spacing-md) var(--spacing-xl);
-        font-size: var(--font-size-lg);
+        padding: 10px 20px; /* Más grande solo en desktop */
+        font-size: 1rem;
+        min-height: 40px;
     }
     
     #resultado {
-        font-size: var(--font-size-xl);
-        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 1.1rem;
+        padding: 10px 20px;
+        min-height: 36px;
     }
     
     .manual-inputs input {
-        width: 100px;
-        padding: var(--spacing-md);
-        font-size: var(--font-size-md);
+        width: 70px;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+        min-height: 36px;
+    }
+    
+    .manual-inputs button {
+        padding: 8px 16px;
+        min-height: 36px;
+        font-size: 0.85rem;
     }
 }
 
 /* ========== MEJORAS PARA TOUCH DEVICES ========== */
 @media (hover: none) and (pointer: coarse) {
-    .die:hover {
-        transform: none;
-        box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .die:active {
-        transform: scale(0.95);
-        transition: transform 0.1s;
-    }
-    
     .dice-container button {
-        min-height: var(--button-min-height);
-        padding: var(--spacing-md) var(--spacing-lg);
+        min-height: 36px; /* Suficiente para touch pero no excesivo */
+        padding: 8px 16px;
+        font-size: 0.85rem;
     }
     
     .dice-container button:hover {
         transform: none;
-        box-shadow: var(--shadow-button);
     }
     
     .dice-container button:active {
-        transform: scale(0.98);
+        transform: scale(0.96);
         transition: transform 0.1s;
     }
     
     .manual-inputs input {
-        min-height: 44px;
-        padding: var(--spacing-sm) var(--spacing-md);
+        min-height: 36px;
+        padding: 8px 12px;
     }
     
     .manual-inputs button {
-        min-height: 44px;
-        padding: var(--spacing-sm) var(--spacing-lg);
+        min-height: 36px;
+        padding: 8px 16px;
+    }
+    
+    /* En móviles touch, mantener tamaños compactos */
+    @media (max-width: 480px) {
+        .dice-container button {
+            min-height: 32px;
+            padding: 6px 12px;
+        }
+        
+        .manual-inputs input,
+        .manual-inputs button {
+            min-height: 30px;
+        }
     }
 }
 
 /* ========== REDUCIR MOVIMIENTO ========== */
 @media (prefers-reduced-motion: reduce) {
     .die.rolling {
-        animation: none;
-    }
-    
-    .die.resultado {
         animation: none;
     }
     
@@ -408,56 +435,55 @@
         transition: none;
     }
     
-    .die:hover,
-    .dice-container button:hover {
+    .dice-container button:hover,
+    .manual-inputs button:hover {
         transform: none;
     }
+}
+
+/* ========== ESTADOS ESPECIALES ========== */
+.dice-container.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.dice-container.rolling .die {
+    pointer-events: none;
 }
 
 /* ========== MODO ALTO CONTRASTE ========== */
 @media (prefers-contrast: high) {
     .die {
         border-width: 3px;
-        border-color: var(--text-primary);
+        border-color: #000;
     }
     
     .dice-container button {
-        border: var(--border-width-thick) solid var(--text-primary);
+        border: 2px solid #000;
+        font-weight: 600;
     }
     
     .manual-inputs input {
         border-width: 2px;
-        border-color: var(--text-primary);
+        border-color: #000;
     }
     
     #resultado {
         border-width: 2px;
-        border-color: var(--text-primary);
-        background: rgba(255, 215, 0, 0.3);
+        border-color: #000;
+        background: rgba(255, 215, 0, 0.4);
     }
 }
 
-    
-   
 /* ========== ANIMACIONES ADICIONALES ========== */
 @keyframes diceShake {
     0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-    20%, 40%, 60%, 80% { transform: translateX(2px); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-1px); }
+    20%, 40%, 60%, 80% { transform: translateX(1px); }
 }
 
 .die.shake {
-    animation: diceShake 0.5s ease-in-out;
-}
-
-@keyframes buttonPulse {
-    0% { box-shadow: var(--shadow-button); }
-    50% { box-shadow: var(--shadow-button-hover); }
-    100% { box-shadow: var(--shadow-button); }
-}
-
-.dice-container button.pulse {
-    animation: buttonPulse 1s infinite;
+    animation: diceShake 0.4s ease-in-out;
 }
 
 /* ========== ESTADOS DE CARGA ========== */
@@ -470,11 +496,11 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
     border: 2px solid transparent;
-    border-top: 2px solid var(--monopoly-gold);
+    border-top: 2px solid var(--monopoly-gold, #ffd700);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -482,73 +508,4 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-/* ========== TOOLTIPS PARA DADOS ========== */
-.die[title]:hover::before {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--text-primary);
-    color: var(--text-white);
-    border-radius: var(--border-radius-sm);
-    font-size: var(--font-size-xs);
-    white-space: nowrap;
-    z-index: 1000;
-    margin-bottom: var(--spacing-xs);
-}
-
-.die[title]:hover::after {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-/* ========== EFECTOS SONOROS VISUALES ========== */
-.die.sound-effect {
-    position: relative;
-}
-
-.die.sound-effect::after {
-    content: '♪';
-    position: absolute;
-    top: -20px;
-    right: -10px;
-    font-size: 16px;
-    color: var(--monopoly-gold);
-    animation: soundWave 0.5s ease-out;
-    pointer-events: none;
-}
-
-@keyframes soundWave {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1.5) translateY(-10px);
-    }
-}
-/* ========== REDUCIR MOVIMIENTO ========== */
-@media (prefers-reduced-motion: reduce) {
-    .die.rolling {
-        animation: none;
-    }
-    
-    .die {
-        transition: none;
-    }
-    
-    .dice-container button {
-        transition: none;
-    }
 }
