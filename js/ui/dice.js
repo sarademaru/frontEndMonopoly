@@ -53,7 +53,7 @@ export function inicializarListenersDados({
         jugador.enCarcel = false;
         jugador.turnosEnCarcel = 0;
         resultadoTexto.textContent +=
-          ` 🎉 ¡Doble! ${jugador.nombre} sale de la cárcel y avanza ${total} casillas.`;
+          ` 🎉 ¡Pares! ${jugador.nombre} sale de la cárcel y avanza ${total} casillas.`;
         game.moverJugadorActual(total);
         moverFicha(jugador);
       } else {
@@ -63,10 +63,10 @@ export function inicializarListenersDados({
           jugador.turnosEnCarcel = 0;
           jugador.dinero -= 50;
           resultadoTexto.textContent +=
-            ` ❌ No sacó doble en 3 turnos. Paga $50 y sale de la cárcel.`;
+            ` ❌ No sacó pares en 3 turnos. Paga $50 y sale de la cárcel.`;
         } else {
           resultadoTexto.textContent +=
-            ` ❌ No sacó doble. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
+            ` ❌ No sacó pares. Turno perdido en la cárcel (${jugador.turnosEnCarcel}/3).`;
           game.siguienteTurno();
           actualizarTurno(game);
           return;
@@ -106,18 +106,18 @@ export function inicializarListenersDados({
         }
       }
 
-      // dobles
+      // pares
       if (isDouble) {
         if (doublesCount >= 2) {
           enviarACarcel(jugador);
           return;
         }
-        resultadoTexto.textContent += " 🎉 ¡Doble! repite turno";
+        resultadoTexto.textContent += " 🎉 ¡Pares! repite turno";
         return; // No pasar turno aún
       }
     }
 
-    // Si no hubo dobles se pasa al siguiente turno
+    // Si no hubo pares se pasa al siguiente turno
     game.siguienteTurno();
     actualizarTurno(game);
   }
