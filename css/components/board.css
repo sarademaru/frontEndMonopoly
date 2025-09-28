@@ -1,13 +1,14 @@
 
 /* ========== TABLERO ========== */
 #tablero {
+    background-image: url("../../assets/fondo-dinero.jpeg");
     margin-top: var(--spacing-lg);
     display: grid;
     grid-template-rows: repeat(11, 1fr);
     grid-template-columns: repeat(11, 1fr);
     width: var(--board-size);
     aspect-ratio: 1 / 1;
-    background: var(--board-bg);
+    
     gap: 0;
     border: var(--border-width-heavy) solid var(--board-border);
     position: relative;
@@ -15,6 +16,8 @@
     height: 130vmin;
     
 }
+
+
 
 .panel-jugadores {
     display: flex;

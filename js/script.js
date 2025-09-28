@@ -1,34 +1,46 @@
-// script.js (main entry point)
-/**
- * Punto de entrada principal para el juego de Monopoly.
- * Inicializa el juego, la UI y maneja la lógica principal.
- */
+// ==================================
+// script.js (Main Entry Point)
+// Juego de Monopoly - Lógica principal y UI
+// ==================================
 
+// -------------------------
+// Imports
+// -------------------------
 import UI, { inicializarPanel } from "./UI.js";
 import Juego from "./game.js";
 import { agregarNovedad } from "./utilities.js";
-window.agregarNovedad = agregarNovedad;
 import { cargarCasillas, dibujarFichas, moverFicha, getBoardData } from "./ui/board.js";
 import { inicializarListenersDados } from "./ui/dice.js";
 import { actualizarTurno } from "./ui/turno.js";
-import { aplicarImpuesto, cobrarRenta, mostrarCarta, mostrarDetalles } from "./utilities/gameUtils.js";
-import { calcularPatrimonio } from "./utilities/gameUtils.js";
+import {
+  aplicarImpuesto,
+  cobrarRenta,
+  mostrarCarta,
+  mostrarDetalles,
+  calcularPatrimonio
+} from "./utilities/gameUtils.js";
 
-// =============================
-// CONFIGURACIÓN DEL BACKEND
-// =============================
+// Exponer globalmente
+window.agregarNovedad = agregarNovedad;
+
+// -------------------------
+// Configuración
+// -------------------------
 const API_BASE = "http://127.0.0.1:5000";
-
 let boardData;
 let game;
 let ui;
 
-
-
+// -------------------------
+// Listeners iniciales
+// -------------------------
 document.getElementById("start-game").addEventListener("click", () => {
   document.getElementById("pre-menu-modal").style.display = "none";
 });
 
+// -------------------------
+// Inicialización de partida
+// -------------------------
 export async function iniciarJuego(jugadores) {
   const propiedades = new Array(40).fill(null);
   game = new Juego(jugadores, propiedades);
@@ -43,7 +55,6 @@ export async function iniciarJuego(jugadores) {
   window.dibujarPanelJugadores = dibujarPanelJugadores;
 
   inicializarPanel();
-
   boardData = getBoardData();
   window.boardData = boardData;
 
@@ -55,6 +66,7 @@ export async function iniciarJuego(jugadores) {
     mostrarCarta,
     mostrarDetalles
   });
+
   agregarNovedad(`🎉 El juego ha comenzado con ${jugadores.length} jugadores.`);
   actualizarTurno(game);
 
@@ -68,20 +80,22 @@ export async function iniciarJuego(jugadores) {
 function aplicarAccionCarta(carta, jugador) {
   if (!carta.action) return;
 
+  // 💰 Dinero
   if (carta.action.money) {
     jugador.dinero += carta.action.money;
     const nombreCarta = getNombreCarta(carta.type);
 
-    document.getElementById("resultado").textContent =
-      `${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)} por carta de ${nombreCarta} 💵`;
-
-    agregarNovedad(`${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)} por carta de ${nombreCarta} 💵`);
+    const mensaje = `${jugador.nombre} ${carta.action.money > 0 ? "recibió" : "pagó"} $${Math.abs(carta.action.money)} por carta de ${nombreCarta} 💵`;
+    document.getElementById("resultado").textContent = mensaje;
+    agregarNovedad(mensaje);
   }
 
-  if (carta.action.goTo && carta.action.goTo.toLowerCase() === "jail") {
+  // 🚔 Cárcel
+  if (carta.action.goTo?.toLowerCase() === "jail") {
     enviarACarcel(jugador);
   }
 
+  // 🚶‍♂️ Mover a casilla
   if (carta.action.moveTo !== undefined) {
     jugador.posicion = carta.action.moveTo;
     moverFicha(jugador);
@@ -104,14 +118,11 @@ function getNombreCarta(type) {
   }
 }
 
+// Exponer globalmente
 window.aplicarAccionCarta = aplicarAccionCarta;
-// Exponer un abridor de detalles para clicks en casillas fuera del flujo de turno
-// Abre el mismo modal pero sin jugador (compra deshabilitada) y con referencia al game actual
 window.mostrarDetalles = (casilla) => {
   try {
     const gameRef = window.game || game;
-    // jugador = null para que el botón Comprar quede deshabilitado
-    // fromLanding = false para no afectar el turno
     mostrarDetalles(casilla, null, gameRef, { fromLanding: false, shouldRepeat: false });
   } catch (e) {
     console.warn("No se pudo abrir detalles de casilla:", e);
@@ -130,10 +141,9 @@ function dibujarPanelJugadores(jugadores) {
     div.classList.add("jugador-panel");
     div.id = `panel-${j.nombre}`;
 
-    let flagUrl = "";
-    if (j.country) {
-      flagUrl = `https://flagsapi.com/${j.country.toUpperCase()}/flat/32.png`;
-    }
+    let flagUrl = j.country
+      ? `https://flagsapi.com/${j.country.toUpperCase()}/flat/32.png`
+      : "";
 
     div.innerHTML = `
       <h4>
@@ -150,25 +160,26 @@ function dibujarPanelJugadores(jugadores) {
 }
 
 // -------------------------
-// Ranking local (partida)
+// Terminar partida
 // -------------------------
+let _scoresEnviados = false;
+
 document.getElementById("btn-terminar").addEventListener("click", () => {
   terminarJuego();
 });
 
-let _scoresEnviados = false;  // evita doble click
-
 async function terminarJuego() {
-  if (_scoresEnviados) return; // para evita que se vuelva a ejecutar
+  if (_scoresEnviados) return;
   _scoresEnviados = true;
-
   window.juegoTerminado = true;
 
-  const ranking = game.jugadores.map(j => ({
-    nombre: j.nombre,
-    pais: j.country,
-    patrimonio: calcularPatrimonio(j)
-  })).sort((a, b) => b.patrimonio - a.patrimonio);
+  const ranking = game.jugadores
+    .map(j => ({
+      nombre: j.nombre,
+      pais: j.country,
+      patrimonio: calcularPatrimonio(j)
+    }))
+    .sort((a, b) => b.patrimonio - a.patrimonio);
 
   for (const j of ranking) {
     if (j.nombre && j.pais) {
@@ -190,20 +201,13 @@ async function terminarJuego() {
 
   document.getElementById("btnLanzar").disabled = true;
   document.getElementById("btnManual").disabled = true;
-
   mostrarResultadosFinales(ranking);
 
-  // Mostrar overlay de fin
   document.getElementById("game-overlay")?.classList.remove("oculto");
-
-  // Ocultar pre-menú definitivamente
-  const preMenu = document.getElementById("pre-menu-modal");
-  if (preMenu) preMenu.style.display = "none";
-  
+  document.getElementById("pre-menu-modal").style.display = "none";
   document.getElementById("btn-terminar").classList.add("oculto");
   document.getElementById("toggle-panel").classList.add("oculto");
-} 
-
+}
 
 function mostrarResultadosFinales(ranking) {
   const modal = document.getElementById("modal-resultados");
@@ -229,8 +233,17 @@ function mostrarResultadosFinales(ranking) {
   modal.classList.remove("oculto");
 }
 
+// 🔹 Reset y volver al menú
 document.getElementById("cerrar-modal").addEventListener("click", () => {
   document.getElementById("modal-resultados").classList.add("oculto");
+  _scoresEnviados = false;
+  window.juegoTerminado = false;
+  sessionStorage.removeItem("juegoTerminado");
+  sessionStorage.removeItem("juegoIniciado");
+
+  document.getElementById("pre-menu-modal").style.display = "block";
+  document.getElementById("btnLanzar").disabled = false;
+  document.getElementById("btnManual").disabled = false;
 });
 
 // -------------------------
@@ -263,14 +276,11 @@ document.getElementById("btn-ranking-global").addEventListener("click", async ()
   try {
     const res = await fetch(`${API_BASE}/ranking`);
     if (!res.ok) throw new Error("Error al obtener ranking global");
-
     const data = await res.json();
-    const top10 = data.slice(0, 10);
-
-    mostrarRankingGlobal(top10);
+    mostrarRankingGlobal(data.slice(0, 10));
   } catch (err) {
     console.error("Error obteniendo ranking global:", err);
-    alert("⚠️ No se pudo obtener el ranking global. Revisa que el backend en Flask esté corriendo en " + API_BASE);
+    alert(`⚠ No se pudo obtener el ranking global. Revisa que el backend Flask esté corriendo en ${API_BASE}`);
   }
 });
 
@@ -281,8 +291,10 @@ document.getElementById("cerrar-ranking-global").addEventListener("click", () =>
 // -------------------------
 // Helper propiedades
 // -------------------------
-// Uso: window.actualizarEstadoPropiedad(1, { ownerColor: "#ff0000", houses: 2, hotel: false, ownerName: "Jugador 1" })
-window.actualizarEstadoPropiedad = function (id, { ownerColor = null, houses = 0, hotel = false, ownerName = "" } = {}) {
+window.actualizarEstadoPropiedad = function (
+  id,
+  { ownerColor = null, houses = 0, hotel = false, ownerName = "" } = {}
+) {
   const estadoEl = document.getElementById(`estado-${id}`);
   const edifEl = document.getElementById(`edif-${id}`);
   if (!estadoEl) return;
@@ -296,7 +308,7 @@ window.actualizarEstadoPropiedad = function (id, { ownerColor = null, houses = 0
   } else {
     estadoEl.classList.remove("disponible");
     estadoEl.classList.add("ocupado");
-    estadoEl.textContent = ownerName ? ownerName : "";
+    estadoEl.textContent = ownerName || "";
     estadoEl.style.backgroundColor = ownerColor;
     estadoEl.style.color = "#fff";
   }
