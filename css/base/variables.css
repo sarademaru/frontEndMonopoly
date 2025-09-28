@@ -1,5 +1,5 @@
 /* ============================================
-   VARIABLES CSS - MONOPOLY GAME
+  VARIABLES CSS - MONOPOLY GAME
    ============================================ */
 
 :root {
@@ -132,7 +132,7 @@
 }
 
 /* ============================================
-   VARIABLES ESPECÍFICAS PARA DARK MODE
+  VARIABLES ESPECÍFICAS PARA DARK MODE
    ============================================ */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -142,7 +142,7 @@
 }
 
 /* ============================================
-   VARIABLES PARA DISPOSITIVOS TOUCH
+  VARIABLES PARA DISPOSITIVOS TOUCH
    ============================================ */
 @media (hover: none) and (pointer: coarse) {
   :root {

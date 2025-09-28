@@ -35,8 +35,7 @@ function generatePlayerInputs(count) {
     playersSetup.appendChild(playerDiv);
   }
 
- loadCountries().then(() => activarValidacion());
-
+loadCountries().then(() => activarValidacion());
 }
 
 // ------------------

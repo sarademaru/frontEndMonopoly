@@ -17,136 +17,135 @@
 }
 
 .panel-jugadores {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 15px 0;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px 0;
+    flex-wrap: wrap;
 }
 
 .jugador-panel {
-  background: #fff;
-  border: 2px solid #444;
-  border-radius: 10px;
-  padding: 10px 15px;
-  min-width: 140px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    background: #fff;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 10px 15px;
+    min-width: 140px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .jugador-panel h4 {
-  margin: 5px 0;
+    margin: 5px 0;
 }
 
 .jugador-panel .dinero {
-  font-weight: bold;
-  color: green;
+    font-weight: bold;
+    color: green;
 }
 
 .jugador-panel .propiedades {
-  font-size: 0.85em;
-  color: #333;
+    font-size: 0.85em;
+    color: #333;
 }
 
 .estado.hipotecada {
-  background-color: #555;
-  color: #ff4d4d;
-  font-weight: bold;
-  text-align: center;
+    background-color: #555;
+    color: #ff4d4d;
+    font-weight: bold;
+    text-align: center;
 }
 
 .owner-token {
-  font-size: 1rem;
+    font-size: 1rem;
 }
 
 .owner-name {
-  font-weight: bold;
-  color: #0d0d0d;
+    font-weight: bold;
+    color: #0d0d0d;
 }
 .owner-info {
-  position: absolute;
-  bottom: 4px;          /* siempre al fondo de la casilla */
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 2px 6px;
-  border-radius: 6px;
+    position: absolute;
+    bottom: 4px;          /* siempre al fondo de la casilla */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 6px;
+    border-radius: 6px;
 }
 
 #detalleModal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  background: rgba(0,0,0,0.4);
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 #detalleModal .modal-content {
-  background: #fff;
-  padding: 18px;
-  border-radius: 8px;
-  max-width: 360px;
-  text-align: center;
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    max-width: 360px;
+    text-align: center;
 }
 #detalleModal .btn {
-  margin: 6px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  /* background: #333333;
-  color: white; */
-  border: none;
-  cursor: pointer;
+    margin: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    /* background: #333333;
+    color: white; */
+    border: none;
+    cursor: pointer;
 }
 #detalleModal .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 
 .casilla {
-  border: none;
-  margin: var(--border-width);
-  display: flex;
-  flex-direction: column;
-  
-  align-items: center;
-  justify-content: flex-start;
-  font-size: var(--cell-font-size);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-  padding: var(--spacing-xs);
-  box-sizing: border-box;
-  background: var(--cell-bg);
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--shadow-light);
-  position: relative; /* para ubicar badges dentro de la casilla */
-  overflow: hidden; /* evita desbordes por badges/edificaciones */
+    border: none;
+    margin: var(--border-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: var(--cell-font-size);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    padding: var(--spacing-xs);
+    box-sizing: border-box;
+    background: var(--cell-bg);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-light);
+    position: relative; /* para ubicar badges dentro de la casilla */
+    overflow: hidden; /* evita desbordes por badges/edificaciones */
 }
 
 .color-bar {
-  width: 100%;
-  height: 20%;
-  border-bottom: var(--border-width) solid var(--board-border);
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    width: 100%;
+    height: 20%;
+    border-bottom: var(--border-width) solid var(--board-border);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 /* ========== TIPOS DE CASILLAS ========== */
 .casilla.tax {
-  background: var(--tax-color); 
+    background: var(--tax-color); 
 }
 .casilla.chance {
-  background: var(--chance-color); 
+    background: var(--chance-color); 
 }
 .casilla.community_chest {
-  background: var(--community-color); 
+    background: var(--community-color); 
 }
 .casilla.railroad {
-  background: var(--railroad-color); 
+    background: var(--railroad-color); 
 }
 .casilla.special {
-  background: var(--special-color); 
+    background: var(--special-color); 
 }
 
 /* ========== CENTRO DEL TABLERO ========== */
@@ -163,13 +162,13 @@
 
 .ficha {
   font-size: 3vmin;         /* tamaño relativo a pantalla */
-  margin: 0.2vmin;
+    margin: 0.2vmin;
   display: inline-block;    /* asegura que se rendericen correctamente */
-  width: auto;
-  height: auto;
-  pointer-events: none;
-  text-align: center;
-  line-height: 1;
+    width: auto;
+    height: auto;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1;
 }
 
 
@@ -181,8 +180,8 @@
 
 
 .cartas {
-  display: flex;
-  gap: var(--spacing-huge);
+    display: flex;
+    gap: var(--spacing-huge);
 }
 
 .cartas img {
@@ -243,215 +242,215 @@
 
 /* Badge de estado de propiedad */
 .estado {
-   position: absolute;
-  top: 2px; /* se ajusta con media queries */
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 2px 6px;
-  font-size: 0.65rem;
-  line-height: 1;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.15);
-  background: #ffffff;
-  color: #000000;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  pointer-events: none;
-  z-index: 2;
+    position: absolute;
+    top: 2px; /* se ajusta con media queries */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    line-height: 1;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    pointer-events: none;
+    z-index: 2;
 }
 
 .estado.ocupado {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 /* Contenedor de casas/hotel */
 .edificaciones {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.9rem;
-  letter-spacing: 2px;
-  user-select: none;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    user-select: none;
 }
 
 
 /* ====== BASE (mobile first) ====== */
 .estado {
-  position: absolute;
-  top: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 2px 6px;
-  font-size: 0.65rem;
-  line-height: 1;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.15);
-  background: #ffffff;
-  color: #000000;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  pointer-events: none;
-  z-index: 2;
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    line-height: 1;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    pointer-events: none;
+    z-index: 2;
 
 
-  max-width: 70%;          /* nunca más ancho que la casilla */
-  overflow: hidden;        /* oculta lo que sobra */
-  text-overflow: ellipsis; /* agrega "..." si no cabe */
-  white-space: nowrap;  
+    max-width: 70%;          /* nunca más ancho que la casilla */
+    overflow: hidden;        /* oculta lo que sobra */
+    text-overflow: ellipsis; /* agrega "..." si no cabe */
+    white-space: nowrap;  
 }
 
 .estado.ocupado {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .edificaciones {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.9rem;
-  letter-spacing: 2px;
-  user-select: none;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    user-select: none;
 }
 
 /* ====== RESPONSIVE ====== */
 
 /* Móviles muy pequeños (≤320px) */
 @media (max-width: 320px) {
-   #tablero {
+#tablero {
     width: 95vmin;
     margin-top: var(--spacing-sm);
     overflow: hidden;
-  }
-  .estado {
+}
+.estado {
     font-size: 0.075rem;
     padding: 0.09px 4px;
     top: 1px;
     max-width: 25%;
-  }
-  .edificaciones {
+}
+.edificaciones {
     font-size: 0.6rem;
     bottom: 2px;
-  }
-  .ficha {
+}
+.ficha {
     font-size: 2.0vmin;
-  }
+}
 
 }
 
 /* Móviles normales (≤480px) */
 @media (max-width: 480px) {
-  .estado {
+.estado {
     font-size: 0.55rem;
     padding: 2px 4px;
-  }
-  .edificaciones {
+}
+.edificaciones {
     font-size: 0.7rem;
-  }
+}
 
-  body {
+body {
     padding: var(--spacing-sm) 0;
-  }
-  #tablero {
+}
+#tablero {
     width: 90vmin;
     margin-top: var(--spacing-sm);
     overflow: hidden;
-  }
-  #dice-container {
+}
+#dice-container {
     gap: var(--spacing-lg);
     margin-top: var(--spacing-sm);
-  }
-  .cartas {
+}
+.cartas {
     gap: var(--spacing-lg);
-  }
-  .cartas img {
+}
+.cartas img {
     max-width: 150px;
     height: 90px;
     margin: var(--spacing-sm);
-  }
-  .logo-monopoly {
+}
+.logo-monopoly {
     max-width: 250px; /* lo haces más pequeño */
     height: auto;    
     margin-bottom: var(--spacing-lg);
-  }
-    .ficha {
+}
+.ficha {
     font-size: 3.0vmin;
-  }
+}
 }
 
 /* Tablets (≤768px) */
 @media (max-width: 768px) {
-  #tablero {
+#tablero {
     width: 80vmin;
     margin-top: var(--spacing-sm);
     overflow: hidden;
-  }
-  .estado {
+}
+.estado {
     font-size: 0.6rem;
     padding: 2px 5px;
-  }
-  .edificaciones {
+}
+.edificaciones {
     font-size: 0.8rem;
-  }
-  .logo-monopoly {
+}
+.logo-monopoly {
     max-width: 350px; /* lo haces más pequeño */
     height: auto;    
     margin-bottom: var(--spacing-lg);
-  }
-  
-  #dice-container {
+}
+
+#dice-container {
     gap: var(--spacing-lg);
     margin-top: var(--spacing-sm);
-  }
-  .cartas {
+}
+.cartas {
     gap: var(--spacing-lg);
-  }
-  .cartas img {
+}
+.cartas img {
     max-width: 150px;
     height: 90px;
     margin: var(--spacing-sm);
-  }
-  .logo-monopoly {
+}
+.logo-monopoly {
     max-width: 250px; /* lo haces más pequeño */
     height: auto;    
     margin-bottom: var(--spacing-lg);
-  }
+}
 
-    .ficha {
+.ficha {
     font-size: 3.0vmin;
-  }
+}
 }
 
 
 /* Escritorios grandes (≥1200px) */
 @media (min-width: 1200px) {
-  .estado {
+.estado {
     font-size: 0.75rem;
     padding: 3px 2px;
-  }
+}
 
-  .cartas img {
+.cartas img {
     min-width: 100px;
     height: 100px;
     margin: var(--spacing-xs);
-  }
+}
 
-   #tablero {
+#tablero {
     width: 170vmin;
     height: 170vmin;
-  
+
     overflow: hidden;
-  }
-  .edificaciones {
+}
+.edificaciones {
     font-size: 1rem;
-  }
-   .logo-monopoly {
+}
+.logo-monopoly {
     min-width: 600px; /* lo haces más pequeño */
     height: auto;    
     margin-bottom: var(--spacing-lg);
-  }
+}
 .ficha {
     font-size: 4.0vmin;
-  }
+}
 
 }
 
@@ -460,44 +459,44 @@
 
 /* Orientación landscape */
 @media screen and (max-height: 500px) and (orientation: landscape) {
-  body {
+body {
     padding: var(--spacing-xs) 0;
-  }
-  #tablero {
+}
+#tablero {
     width: 80vmin;
     margin-top: var(--spacing-xs);
-  }
-  .dice-container {
+}
+.dice-container {
     margin-bottom: var(--spacing-xs);
-  }
-  .centro {
+}
+.centro {
     padding: var(--spacing-sm);
-  }
-  .logo-monopoly {
+}
+.logo-monopoly {
     margin-bottom: var(--spacing-sm);
-  }
-  .cartas {
+}
+.cartas {
     gap: var(--spacing-lg);
-  }
-  .cartas img {
+}
+.cartas img {
     max-width: 100px;
     height: 60px;
     margin: var(--spacing-xs);
-  }
+}
 }
 
 /* Touch devices */
 @media (hover: none) and (pointer: coarse) {
-  .dice-container button {
+.dice-container button {
     min-height: var(--button-min-height);
     padding: var(--spacing-md) var(--spacing-lg);
-  }
-  .manual-inputs input {
+}
+.manual-inputs input {
     min-height: 40px;
     padding: var(--spacing-sm);
-  }
-  .manual-inputs button {
+}
+.manual-inputs button {
     min-height: 40px;
     padding: var(--spacing-sm) var(--spacing-md);
-  }
+}
 }
